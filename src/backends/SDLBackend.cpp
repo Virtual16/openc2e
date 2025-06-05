@@ -18,11 +18,13 @@
  */
 
 #include "SDLBackend.h"
-#include "SDL_gfxPrimitives.h"
 #include "SDL_ttf.h"
 #include "openc2e.h"
 #include "Engine.h"
 #include "creaturesImage.h"
+#include <cstdlib>
+
+static inline Uint8 *pixelPtr(SDL_Surface *surf, int x, int y, int bytesperpixel);
 
 SDLBackend *g_backend;
 
@@ -241,7 +243,46 @@ retry:
 }
 
 void SDLSurface::renderLine(int x1, int y1, int x2, int y2, unsigned int colour) {
-	aalineColor(surface, x1, y1, x2, y2, colour);
+        Uint8 r = (colour >> 16) & 0xff;
+        Uint8 g = (colour >> 8) & 0xff;
+        Uint8 b = colour & 0xff;
+        Uint8 a = (colour >> 24) & 0xff;
+
+        Uint32 pixel = SDL_MapRGBA(surface->format, r, g, b, a);
+
+        if (SDL_MUSTLOCK(surface))
+                if (SDL_LockSurface(surface) == -1) return;
+
+        int dx = abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
+        int dy = -abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
+        int err = dx + dy, e2;
+
+        for (;;) {
+                if ((unsigned)x1 < width && (unsigned)y1 < height) {
+                        switch (surface->format->BytesPerPixel) {
+                                case 1:
+                                        *(Uint8*)pixelPtr(surface, x1, y1, 1) = (Uint8)pixel;
+                                        break;
+                                case 2:
+                                        *(Uint16*)pixelPtr(surface, x1, y1, 2) = (Uint16)pixel;
+                                        break;
+                                case 3: {
+                                        Uint8 *p = pixelPtr(surface, x1, y1, 3);
+                                        p[0] = (pixel >> 16) & 0xff;
+                                        p[1] = (pixel >> 8) & 0xff;
+                                        p[2] = pixel & 0xff;
+                                        break; }
+                                default:
+                                        *(Uint32*)pixelPtr(surface, x1, y1, 4) = pixel;
+                        }
+                }
+                if (x1 == x2 && y1 == y2) break;
+                e2 = 2 * err;
+                if (e2 >= dy) { err += dy; x1 += sx; }
+                if (e2 <= dx) { err += dx; y1 += sy; }
+        }
+
+        if (SDL_MUSTLOCK(surface)) SDL_UnlockSurface(surface);
 }
 
 SDL_Color getColourFromRGBA(unsigned int c) {
