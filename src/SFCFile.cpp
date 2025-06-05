@@ -47,8 +47,8 @@
 #define TYPE_MACRO 14
 #define TYPE_OBJECT 100
 
-#include <boost/format.hpp>
-#define sfccheck(x) if (!(x)) throw creaturesException(std::string("failure while reading SFC file: '" #x "' in " __FILE__ " at line ") + boost::str(boost::format("%d") % __LINE__));
+#include <fmt/format.h>
+#define sfccheck(x) if (!(x)) throw creaturesException(fmt::format("failure while reading SFC file: '{}' in {} at line {}", #x, __FILE__, __LINE__));
 
 SFCFile::~SFCFile() {
 	// This contains all the objects we've constructed, so we can just zap this and
@@ -279,7 +279,7 @@ void SFCFile::setVersion(unsigned int v) {
 	} else if (v == 1) {
 		sfccheck(world.gametype == "c2");
 	} else {
-		throw creaturesException(boost::str(boost::format("unknown version# %d") % v));
+               throw creaturesException(fmt::format("unknown version# {}", v));
 	}
 
 	ver = v;
@@ -1216,13 +1216,12 @@ void SFCScenery::copyToWorld() {
 	p->is_transparent = true;
 }
 
-#include <boost/format.hpp>
 #include <sstream>
 
 #include "caosScript.h"
 
 void SFCScript::install() {
-	std::string scriptinfo = boost::str(boost::format("<SFC script %d, %d, %d: %d>") % (int)family % (int)genus % species % eventno);
+       std::string scriptinfo = fmt::format("<SFC script {}, {}, {}: {}>", (int)family, (int)genus, species, eventno);
 	caosScript script(world.gametype, scriptinfo);
 	std::istringstream s(data);
 	try {

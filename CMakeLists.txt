@@ -7,6 +7,7 @@ EXECUTE_PROCESS(COMMAND mkdir -p "${GEN}")
 
 SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS 1)
 SET(CMAKE_MODULE_PATH "${SRC}/cmake")
+include(FetchContent)
 
 SET(CMAKE_BUILD_TYPE "RelWithDebInfo" CACHE STRING "The type of build to perform. Valid values are: RelWithDebInfo (default), Debug, Release, MinSizeRel")
 IF (CMAKE_BUILD_TYPE STREQUAL "")
@@ -198,8 +199,17 @@ FIND_PACKAGE(ALUT)
 
 FIND_PACKAGE(Boost 1.34.0 COMPONENTS program_options filesystem thread regex serialization REQUIRED)
 FIND_LIBRARY(BOOST_SYSTEM_LIBRARY NAMES boost_system-mt)
+find_package(fmt QUIET)
+if(NOT fmt_FOUND)
+    FetchContent_Declare(
+        fmt
+        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+        GIT_TAG 10.2.1
+    )
+    FetchContent_MakeAvailable(fmt)
+endif()
 IF(OPENC2E_USE_QT)
-	find_package(Qt4 REQUIRED)
+        find_package(Qt4 REQUIRED)
 ENDIF(OPENC2E_USE_QT)
 
 SET(USE_OPENAL "NO")
@@ -270,9 +280,10 @@ TARGET_LINK_LIBRARIES(openc2e z m pthread
 	boost_program_options-mt
 	boost_serialization-mt
 	boost_filesystem-mt
-	boost_thread-mt
-	boost_regex-mt
-	)
+        boost_thread-mt
+        boost_regex-mt
+        fmt::fmt
+        )
 IF(BOOST_SYSTEM_LIBRARY)
 TARGET_LINK_LIBRARIES(openc2e boost_system-mt)
 ENDIF(BOOST_SYSTEM_LIBRARY)

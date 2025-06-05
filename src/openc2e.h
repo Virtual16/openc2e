@@ -28,7 +28,7 @@
 #include <cassert>
 #include <vector>
 #include <boost/shared_ptr.hpp>
-#include <boost/format.hpp>
+#include <fmt/format.h>
 using boost::shared_ptr;
 
 #include "exceptions.h"
@@ -40,7 +40,7 @@ public:
 	assertFailure(const char *x) throw() : creaturesException(x) { }
 };
 
-#define caos_assert(x) if (!(x)) { throw caosException(boost::str(boost::format("%s thrown from %s:%d") % #x % __FILE__ % __LINE__)); }
+#define caos_assert(x) if (!(x)) { throw caosException(fmt::format("{} thrown from {}:{}", #x, __FILE__, __LINE__)); }
 #define ensure_assert(x) do {\
 	bool ensure__v = (x); \
 	if (!ensure__v) \
