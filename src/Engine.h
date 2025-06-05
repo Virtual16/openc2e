@@ -22,7 +22,7 @@
 
 #include "caosVar.h"
 #include <map>
-#include <filesystem>
+#include <boost/filesystem.hpp>
 
 class Backend;
 class AudioBackend;
@@ -98,8 +98,8 @@ public:
 
 	bool noRun() { return cmdline_norun; }
 
-       std::filesystem::path homeDirectory();
-       std::filesystem::path storageDirectory();
+       boost::filesystem::path homeDirectory();
+       boost::filesystem::path storageDirectory();
 };
 
 extern Engine engine;

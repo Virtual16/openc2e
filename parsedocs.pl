@@ -175,12 +175,15 @@ while (<>) {
 		print STDERR "Missing \%status for $fullname\n";
 	}
 
-	if (!$cat) {
-		$cat = lc $fnmap{$file} || 'unknown';
-	}
+        if (!$cat) {
+                my $val = $fnmap{$file};
+                $cat = defined $val ? lc $val : 'unknown';
+        }
 
-	$stackdelta = $pragma{stackdelta} if defined $pragma{stackdelta};
-	$stackdelta = "INT_MAX" if lc $pragma{stackdelta} eq "any";
+        if (defined $pragma{stackdelta}) {
+                $stackdelta = $pragma{stackdelta};
+                $stackdelta = "INT_MAX" if lc $pragma{stackdelta} eq "any";
+        }
 	die "Deprecated use of pragma retc for $fullname" if defined $pragma{retc};
 
 

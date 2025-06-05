@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <memory>
+#include <cassert>
 
 class Dialect {
 	private:

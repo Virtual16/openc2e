@@ -22,7 +22,6 @@
 
 #include <boost/intrusive_ptr.hpp>
 #include <memory>
-#include <boost/enable_shared_from_this.hpp>
 
 #include <string>
 
@@ -91,7 +90,7 @@ struct AudioStreamBase {
 
 enum SourceState { SS_STOP, SS_PLAY, SS_PAUSE };
 
-class AudioSource : public boost::enable_shared_from_this<AudioSource> {
+class AudioSource : public std::enable_shared_from_this<AudioSource> {
 protected:
 	AudioSource() { }
 
@@ -131,7 +130,7 @@ public:
 	virtual void setFollowingView(bool) = 0;
 };
 
-class AudioBackend : public boost::enable_shared_from_this<AudioBackend> {
+class AudioBackend : public std::enable_shared_from_this<AudioBackend> {
 protected:
 	AudioBackend() { }
 

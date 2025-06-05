@@ -40,7 +40,7 @@ struct RoomDoor {
 
 class Room {
 public:
-	std::map<std::weak_ptr<Room>,RoomDoor *> doors;
+       std::map<std::weak_ptr<Room>, RoomDoor *, std::owner_less<std::weak_ptr<Room>>> doors;
 	unsigned int x_left, x_right, y_left_ceiling, y_right_ceiling;
 	unsigned int y_left_floor, y_right_floor;
 	
