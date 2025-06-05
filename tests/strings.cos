@@ -1,8 +1,8 @@
 * tests for strings
 * fuzzie, 14/07/08
 
-DBG: OUTS "# TEST: strings: 16 tests"
-DBG: OUTS "1..16"
+DBG: OUTS "# TEST: strings: 18 tests"
+DBG: OUTS "1..18"
 
 * test string concaternation
 SETS VA00 "he"
@@ -119,3 +119,16 @@ ELSE
  DBG: OUTS "not ok 16"
 ENDI
 
+* SUBS start index beyond length
+DOIF SUBS "hello" 10 3 eq ""
+ DBG: OUTS "ok 17"
+ELSE
+ DBG: OUTS "not ok 17"
+ENDI
+
+* SUBS negative start index
+DOIF SUBS "hello" -1 3 eq ""
+ DBG: OUTS "ok 18"
+ELSE
+ DBG: OUTS "not ok 18"
+ENDI
