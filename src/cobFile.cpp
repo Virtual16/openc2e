@@ -105,9 +105,11 @@ std::string readstring(std::istream &file) {
 	char *buf = (char *)malloc(n);
 
 	while (true) {
-		file.read(&buf[i], 1);
-		if (!file.good())
-			throw creaturesException("Failed to read string.");
+               file.read(&buf[i], 1);
+               if (!file.good()) {
+                       free(buf); // free buffer before throwing to avoid leaks
+                       throw creaturesException("Failed to read string.");
+               }
 
 		// found null terminator
 		if (buf[i] == 0) {
