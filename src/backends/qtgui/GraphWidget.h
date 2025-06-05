@@ -18,6 +18,9 @@
 #define GRAPHWIDGET_H 1
 
 #include <QtGui>
+#include <QWidget>
+#include <map>
+#include <vector>
 
 struct DataSetDetails {
 	bool visible;

@@ -18,6 +18,8 @@
 #define BRAINVIEWER_H 1
 
 #include <QtGui>
+#include <QDialog>
+#include <QScrollArea>
 
 class BrainViewer : public QDialog {
 	Q_OBJECT

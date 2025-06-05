@@ -28,8 +28,12 @@
 #include <iostream> // debug needs only
 
 mmapifstream::mmapifstream(std::string filename) {
-	live = false;
-	mmapopen(filename);
+        live = false;
+#ifdef _WIN32
+        hFile = NULL;
+        hMap = NULL;
+#endif
+        mmapopen(filename);
 }
 
 void mmapifstream::mmapopen(std::string filename) {
@@ -37,11 +41,28 @@ void mmapifstream::mmapopen(std::string filename) {
 	if (!is_open()) return;
 
 #ifdef _WIN32
-	// todo: store the handle somewhere?
-	HANDLE hFile = CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ,
-		NULL, OPEN_EXISTING, 0, NULL);
-	HANDLE hMap = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
-	void *mapr = MapViewOfFile(hMap, FILE_MAP_READ, 0, 0, 0);
+        hFile = CreateFileA(filename.c_str(), GENERIC_READ, FILE_SHARE_READ,
+                NULL, OPEN_EXISTING, 0, NULL);
+        if (hFile == INVALID_HANDLE_VALUE) {
+                close();
+                setstate(failbit);
+                return;
+        }
+        hMap = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+        if (!hMap) {
+                CloseHandle(hFile);
+                close();
+                setstate(failbit);
+                return;
+        }
+        void *mapr = MapViewOfFile(hMap, FILE_MAP_READ, 0, 0, 0);
+        if (!mapr) {
+                CloseHandle(hMap);
+                CloseHandle(hFile);
+                close();
+                setstate(failbit);
+                return;
+        }
 #else
 	FILE *f = fopen(filename.c_str(), "r");
 	assert(f);
@@ -69,11 +90,16 @@ void mmapifstream::mmapopen(std::string filename) {
 }
 
 mmapifstream::~mmapifstream() {
-	if (live)
+        if (live) {
 #ifdef _WIN32
-		UnmapViewOfFile(map);
+                UnmapViewOfFile(map);
+                if (hMap)
+                        CloseHandle(hMap);
+                if (hFile)
+                        CloseHandle(hFile);
 #else
-		munmap(map, filesize);
+                munmap(map, filesize);
 #endif
+        }
 }
 /* vim: set noet: */

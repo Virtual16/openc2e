@@ -22,6 +22,13 @@
 #include "qtopenc2e.h"
 
 #include <QtGui>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsTextItem>
+#include <QGraphicsSceneHoverEvent>
+#include <QGraphicsSceneMouseEvent>
+#include <QHBoxLayout>
 
 /*
   C1 hatchery resources:
