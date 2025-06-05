@@ -49,12 +49,14 @@ QPixmap imageFromExeResource(unsigned int resourceid, bool mask = true) {
 	if (!r) r = engine.getExeFile()->getResource(PE_RESOURCETYPE_BITMAP, 0x400, resourceid);
 	if (!r) return QPixmap();
 
-	unsigned int size = r->getSize() + 14;
-	char *bmpdata = (char *)malloc(size);
+        unsigned int size = r->getSize() + 14;
+        char *bmpdata = (char *)malloc(size);
+        if (!bmpdata)
+                return QPixmap();
 
-	// fake a BITMAPFILEHEADER
-	bmpdata[0] = 'B'; bmpdata[1] = 'M';
-	memcpy(bmpdata + 2, &size, 4);
+        // fake a BITMAPFILEHEADER
+        bmpdata[0] = 'B'; bmpdata[1] = 'M';
+        memcpy(bmpdata + 2, &size, 4);
 	memset(bmpdata + 6, 0, 8);
 
 	memcpy(bmpdata + 14, r->getData(), r->getSize());
