@@ -19,9 +19,8 @@
 
 #include "PathResolver.h"
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/regex.hpp>
+#include <filesystem>
+#include <regex>
 #include <set>
 #include <map>
 #include <cctype>
@@ -33,7 +32,7 @@
 using std::map;
 using std::set;
 using std::string;
-using namespace boost::filesystem;
+using namespace std::filesystem;
 
 static set<string> dircache;
 static map<string, string> cache;
@@ -156,7 +155,7 @@ bool doCacheDir(path &dir) {
 	return true;
 }
 
-static boost::regex constructSearchPattern(const std::string &wild) {
+static std::regex constructSearchPattern(const std::string &wild) {
 	std::ostringstream matchbuf;
 	matchbuf << "^";
 	for (size_t i = 0; i < wild.size(); i++) {
@@ -171,7 +170,7 @@ static boost::regex constructSearchPattern(const std::string &wild) {
 	}
 	matchbuf << "$";
 	std::string matchstr = matchbuf.str();
-	return boost::regex(matchstr.c_str());
+       return std::regex(matchstr.c_str());
 }
 
 std::vector<std::string> findByWildcard(std::string dir, std::string wild) {
@@ -189,7 +188,7 @@ std::vector<std::string> findByWildcard(std::string dir, std::string wild) {
 	if (!doCacheDir(dirp))
 		return std::vector<std::string>();
 	std::vector<std::string> results;
-	boost::regex l = constructSearchPattern(wild);
+       std::regex l = constructSearchPattern(wild);
 
 	std::string lcdir = toLowerCase(dir);
 	std::map<string, string>::iterator skey = cache.lower_bound(dir);
@@ -203,8 +202,8 @@ std::vector<std::string> findByWildcard(std::string dir, std::string wild) {
 		if (skey->first.length() < lcdir.length() + 2)
 			continue;
 		filepart = toLowerCase(skey->first.substr(lcdir.length() + 1));
-		if (!boost::regex_match(filepart, l))
-			continue;
+               if (!std::regex_match(filepart, l))
+                       continue;
 		results.push_back(skey->second);
 	}
 	return results;
