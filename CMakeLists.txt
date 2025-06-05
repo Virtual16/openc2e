@@ -259,23 +259,17 @@ ELSE(OPENC2E_USE_QT)
 ENDIF(OPENC2E_USE_QT)
 ADD_EXECUTABLE(openc2e ${OPENC2E_CORE} ${FRONTEND_SRCS} ${OPENAL_SRC} ${SDLMIXER_SRC} ${SER_SRCS})
 
-TARGET_LINK_LIBRARIES(openc2e z m pthread 
-	${SDL_LIBRARY}
-	${SDLNET_LIBRARY}
-	${SDLTTF_LIBRARY}
-	${SDLMIXER_LIBRARY}
-	${OPENAL_LIBRARY}
-	${ALUT_LIBRARY}
-	${FRONTEND_LIBS}
-	boost_program_options-mt
-	boost_serialization-mt
-	boost_filesystem-mt
-	boost_thread-mt
-	boost_regex-mt
-	)
-IF(BOOST_SYSTEM_LIBRARY)
-TARGET_LINK_LIBRARIES(openc2e boost_system-mt)
-ENDIF(BOOST_SYSTEM_LIBRARY)
+TARGET_LINK_LIBRARIES(openc2e z m pthread
+        ${SDL_LIBRARY}
+        ${SDLNET_LIBRARY}
+        ${SDLTTF_LIBRARY}
+        ${SDLMIXER_LIBRARY}
+        ${OPENAL_LIBRARY}
+        ${ALUT_LIBRARY}
+        ${FRONTEND_LIBS}
+        ${Boost_LIBRARIES}
+        )
+
 
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
