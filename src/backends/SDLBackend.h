@@ -20,8 +20,8 @@
 #ifndef _SDLBACKEND_H
 #define _SDLBACKEND_H
 
-#include "SDL.h"
-#include <SDL_net.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_net.h>
 #include "Backend.h"
 
 class SDLSurface : public Surface {
@@ -49,7 +49,9 @@ class SDLBackend : public Backend {
 	friend class SDLSurface;
 
 protected:
-	bool networkingup;
+        bool networkingup;
+
+        SDL_Window *window;
 
 	SDLSurface mainsurface;
 	TCPsocket listensocket;

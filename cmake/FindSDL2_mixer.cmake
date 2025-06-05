@@ -1,0 +1,7 @@
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PC_SDL2_MIXER SDL2_mixer)
+set(SDL2_MIXER_LIBRARIES ${PC_SDL2_MIXER_LIBRARIES})
+set(SDL2_MIXER_INCLUDE_DIRS ${PC_SDL2_MIXER_INCLUDE_DIRS})
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(SDL2_mixer DEFAULT_MSG SDL2_MIXER_LIBRARIES SDL2_MIXER_INCLUDE_DIRS)
+mark_as_advanced(SDL2_MIXER_LIBRARIES SDL2_MIXER_INCLUDE_DIRS)

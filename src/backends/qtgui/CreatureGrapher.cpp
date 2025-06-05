@@ -27,7 +27,7 @@ CreatureGrapher::CreatureGrapher(QtOpenc2e *p) : QWidget(p), parent(p) {
 	}
 
 	selector = new ChemicalSelector(this);
-	connect(selector, SIGNAL(onSelectionChange(unsigned int)), this, SLOT(onChemSelectionChange(unsigned int)));
+        connect(selector, &ChemicalSelector::onSelectionChange, this, &CreatureGrapher::onChemSelectionChange);
 	
 	resize(minimumSizeHint());
 

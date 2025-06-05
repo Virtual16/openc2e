@@ -16,7 +16,7 @@
 
 #include "World.h"
 #include "qtopenc2e.h"
-#include <QtGui>
+#include <QtWidgets>
 #include "openc2eview.h"
 #include "Engine.h"
 #include "AudioBackend.h"
@@ -76,12 +76,12 @@ QtOpenc2e::QtOpenc2e(boost::shared_ptr<QtBackend> backend) {
 	viewport = new openc2eView(this, backend);
 	setCentralWidget(viewport);
 
-	connect(this, SIGNAL(creatureChanged()), this, SLOT(onCreatureChange()));
+        connect(this, &QtOpenc2e::creatureChanged, this, &QtOpenc2e::onCreatureChange);
 
 	// idle timer
 	// TODO: should prbly have a background thread to do this?
 	ourTimer = new QTimer(this);
-	connect(ourTimer, SIGNAL(timeout()), this, SLOT(tick()));
+        connect(ourTimer, &QTimer::timeout, this, &QtOpenc2e::tick);
 	ourTimer->start();
 
 	(void)statusBar();
@@ -95,10 +95,10 @@ QtOpenc2e::QtOpenc2e(boost::shared_ptr<QtBackend> backend) {
 	hatchery = new Hatchery(this);
 	agentInjector = new AgentInjector(this);
 	brainViewer = new BrainViewer(this);
-	connect(this, SIGNAL(ticked()), brainViewer, SLOT(onTick()));
+        connect(this, &QtOpenc2e::ticked, brainViewer, &BrainViewer::onTick);
 
 	creatureGrapher = new CreatureGrapher(this);
-	connect(this, SIGNAL(ticked()), creatureGrapher, SLOT(onCreatureTick())); // TODO
+        connect(this, &QtOpenc2e::ticked, creatureGrapher, &CreatureGrapher::onCreatureTick); // TODO
 	creatureGrapherDock = new QDockWidget(this);
 	creatureGrapherDock->hide();
 	creatureGrapherDock->setWidget(creatureGrapher);
@@ -122,7 +122,7 @@ void QtOpenc2e::constructMenus() {
 
 	exitAct = new QAction(tr("&Exit"), this);
 	exitAct->setStatusTip(tr("Exit openc2e"));
-	connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
+        connect(exitAct, &QAction::triggered, this, &QtOpenc2e::close);
 	
 	fileMenu = menuBar()->addMenu(tr("&File"));
 	fileMenu->addAction(exitAct);
@@ -133,7 +133,7 @@ void QtOpenc2e::constructMenus() {
 
 	toggleScrollbarsAct = new QAction(tr("Show &Scrollbars"), this);
 	toggleScrollbarsAct->setCheckable(true);
-	connect(toggleScrollbarsAct, SIGNAL(triggered()), this, SLOT(toggleShowScrollbars()));
+        connect(toggleScrollbarsAct, &QAction::triggered, this, &QtOpenc2e::toggleShowScrollbars);
 	viewMenu->addAction(toggleScrollbarsAct);
 	
 	// only enable scrollbars for c1/c2, by default
@@ -143,54 +143,54 @@ void QtOpenc2e::constructMenus() {
 	/* Control menu */
 
 	controlMenu = menuBar()->addMenu(tr("C&ontrol"));
-	connect(controlMenu, SIGNAL(aboutToShow()), this, SLOT(updateMenus()));
+        connect(controlMenu, &QMenu::aboutToShow, this, &QtOpenc2e::updateMenus);
 
 	pauseAct = new QAction(tr("&Pause"), this);
-	connect(pauseAct, SIGNAL(triggered()), this, SLOT(togglePause()));
+        connect(pauseAct, &QAction::triggered, this, &QtOpenc2e::togglePause);
 	controlMenu->addAction(pauseAct);
 
 	muteAct = new QAction(tr("&Mute"), this);
 	muteAct->setCheckable(true);
-	connect(muteAct, SIGNAL(triggered()), this, SLOT(toggleMute()));
+        connect(muteAct, &QAction::triggered, this, &QtOpenc2e::toggleMute);
 	controlMenu->addAction(muteAct);
 
 	controlMenu->addSeparator();
 	
 	fastSpeedAct = new QAction(tr("&Fast speed"), this);
 	fastSpeedAct->setCheckable(true);
-	connect(fastSpeedAct, SIGNAL(triggered()), this, SLOT(toggleFastSpeed()));
+        connect(fastSpeedAct, &QAction::triggered, this, &QtOpenc2e::toggleFastSpeed);
 	controlMenu->addAction(fastSpeedAct);
 	
 	displayUpdatesAct = new QAction(tr("Slow &display updates"), this);
 	displayUpdatesAct->setCheckable(true);
 	displayUpdatesAct->setEnabled(false);
-	connect(displayUpdatesAct, SIGNAL(triggered()), this, SLOT(toggleDisplayUpdates()));
+        connect(displayUpdatesAct, &QAction::triggered, this, &QtOpenc2e::toggleDisplayUpdates);
 	controlMenu->addAction(displayUpdatesAct);
 
 	autokillAct = new QAction(tr("&Autokill"), this);
 	autokillAct->setCheckable(true);
 	autokillAct->setChecked(world.autokill);
-	connect(autokillAct, SIGNAL(triggered()), this, SLOT(toggleAutokill()));
+        connect(autokillAct, &QAction::triggered, this, &QtOpenc2e::toggleAutokill);
 	controlMenu->addAction(autokillAct);
 
 	/* Debug menu */
 
 	debugMenu = menuBar()->addMenu(tr("&Debug"));
-	connect(debugMenu, SIGNAL(aboutToShow()), this, SLOT(updateMenus()));
+        connect(debugMenu, &QMenu::aboutToShow, this, &QtOpenc2e::updateMenus);
 	
 	showMapAct = new QAction(tr("Show &Map"), this);
 	showMapAct->setCheckable(true);
-	connect(showMapAct, SIGNAL(triggered()), this, SLOT(toggleShowMap()));
+        connect(showMapAct, &QAction::triggered, this, &QtOpenc2e::toggleShowMap);
 	debugMenu->addAction(showMapAct);
 
 	newNornAct = new QAction(tr("Create a new (debug) &Norn"), this);
 	if (engine.version > 2) newNornAct->setEnabled(false); // TODO
-	connect(newNornAct, SIGNAL(triggered()), this, SLOT(newNorn()));
+        connect(newNornAct, &QAction::triggered, this, &QtOpenc2e::newNorn);
 	debugMenu->addAction(newNornAct);
 	
 	newEggAct = new QAction(tr("Create a random &egg"), this);
 	if (engine.version > 2) newEggAct->setEnabled(false); // TODO
-	connect(newEggAct, SIGNAL(triggered()), this, SLOT(newEgg()));
+        connect(newEggAct, &QAction::triggered, this, &QtOpenc2e::newEgg);
 	debugMenu->addAction(newEggAct);
 
 	/* Tools menu */
@@ -198,16 +198,16 @@ void QtOpenc2e::constructMenus() {
 	toolsMenu = menuBar()->addMenu(tr("&Tools"));
 
 	hatcheryAct = new QAction(tr("&Hatchery"), this);
-	connect(hatcheryAct, SIGNAL(triggered()), this, SLOT(showHatchery()));
+        connect(hatcheryAct, &QAction::triggered, this, &QtOpenc2e::showHatchery);
 	toolsMenu->addAction(hatcheryAct);
 	if (engine.version > 2) hatcheryAct->setEnabled(false);
 
 	agentInjectorAct = new QAction(tr("&Agent Injector"), this);
-	connect(agentInjectorAct, SIGNAL(triggered()), this, SLOT(showAgentInjector()));
+        connect(agentInjectorAct, &QAction::triggered, this, &QtOpenc2e::showAgentInjector);
 	toolsMenu->addAction(agentInjectorAct);
 
 	brainViewerAct = new QAction(tr("&Brain Viewer"), this);
-	connect(brainViewerAct, SIGNAL(triggered()), this, SLOT(showBrainViewer()));
+        connect(brainViewerAct, &QAction::triggered, this, &QtOpenc2e::showBrainViewer);
 	toolsMenu->addAction(brainViewerAct);
 
 	toolsMenu->addAction(creatureGrapherDock->toggleViewAction());
@@ -215,7 +215,7 @@ void QtOpenc2e::constructMenus() {
 	/* Creatures menu */
 
 	creaturesMenu = menuBar()->addMenu(tr("&Creatures"));
-	connect(creaturesMenu, SIGNAL(aboutToShow()), this, SLOT(updateCreaturesMenu()));
+        connect(creaturesMenu, &QMenu::aboutToShow, this, &QtOpenc2e::updateCreaturesMenu);
 
 	/* Help menu */
 
@@ -223,7 +223,7 @@ void QtOpenc2e::constructMenus() {
 
 	aboutAct = new QAction(tr("&About"), this);
 	aboutAct->setStatusTip(tr("Find out about openc2e"));
-	connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
+        connect(aboutAct, &QAction::triggered, this, &QtOpenc2e::about);
 
 	helpMenu = menuBar()->addMenu(tr("&Help"));
 	helpMenu->addAction(aboutAct);
@@ -315,7 +315,7 @@ void QtOpenc2e::createC2Toolbars() {
 
 	toolbarhatcheryaction = applettoolbar->addAction(iconFromImageList(appleticons, 0), "Hatchery");
 	toolbarhatcheryaction->setCheckable(true);
-	connect(toolbarhatcheryaction, SIGNAL(triggered()), this, SLOT(toggleHatchery()));
+        connect(toolbarhatcheryaction, &QAction::triggered, this, &QtOpenc2e::toggleHatchery);
 
 	QAction *toolbarownersaction = applettoolbar->addAction(iconFromImageList(appleticons, 2), "Owner's Kit");
 	toolbarownersaction->setCheckable(true);
@@ -349,7 +349,7 @@ void QtOpenc2e::createC2Toolbars() {
 
 	toolbaragentaction = applettoolbar->addAction(iconFromImageList(appleticons, 7), "Agent Injector");
 	toolbaragentaction->setCheckable(true);
-	connect(toolbaragentaction, SIGNAL(triggered()), this, SLOT(toggleAgentInjector()));
+        connect(toolbaragentaction, &QAction::triggered, this, &QtOpenc2e::toggleAgentInjector);
 
 	tempaction = applettoolbar->addAction(iconFromImageList(appleticons, 8), "Unknown Applet"); // history kit?
 	tempaction->setCheckable(true); tempaction->setEnabled(false);
@@ -489,7 +489,7 @@ void QtOpenc2e::updateCreaturesMenu() {
 
 		creatureSelectAct->setCheckable(true);
 		if (world.selectedcreature == p) creatureSelectAct->setChecked(true);
-		connect(creatureSelectAct, SIGNAL(triggered()), this, SLOT(selectCreature()));
+                connect(creatureSelectAct, &QAction::triggered, this, &QtOpenc2e::selectCreature);
 
 		if (monikerDataFor(p).getStatus() != borncreature)
 			creatureSelectAct->setDisabled(true);

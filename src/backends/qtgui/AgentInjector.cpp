@@ -32,10 +32,10 @@ namespace fs = boost::filesystem;
 AgentInjector::AgentInjector(QWidget *parent) : QDialog(parent) {
 	ui.setupUi(this);
 	
-	connect(ui.injectButton, SIGNAL(clicked()), this, SLOT(onInject()));
-	connect(ui.removeButton, SIGNAL(clicked()), this, SLOT(onRemove()));
-	connect(ui.agentList, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), this, SLOT(onSelect(QListWidgetItem *, QListWidgetItem *)));
-	connect(ui.agentList, SIGNAL(currentItemChanged(QListWidgetItem *, QListWidgetItem *)), ui.imagePreview, SLOT(onSelect(QListWidgetItem *, QListWidgetItem *)));
+        connect(ui.injectButton, &QPushButton::clicked, this, &AgentInjector::onInject);
+        connect(ui.removeButton, &QPushButton::clicked, this, &AgentInjector::onRemove);
+        connect(ui.agentList, &QListWidget::currentItemChanged, this, &AgentInjector::onSelect);
+        connect(ui.agentList, &QListWidget::currentItemChanged, ui.imagePreview, &ImagePreview::onSelect);
 	
 	setAttribute(Qt::WA_QuitOnClose, false);
 	

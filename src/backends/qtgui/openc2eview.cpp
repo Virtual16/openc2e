@@ -19,7 +19,7 @@
 #include "Camera.h"
 
 #include "openc2eview.h"
-#include <QtGui>
+#include <QtWidgets>
 #include "QtBackend.h"
 
 #ifdef _WIN32

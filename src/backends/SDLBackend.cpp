@@ -18,8 +18,8 @@
  */
 
 #include "SDLBackend.h"
-#include "SDL_gfxPrimitives.h"
-#include "SDL_ttf.h"
+#include <SDL2/SDL2_gfxPrimitives.h>
+#include <SDL2/SDL_ttf.h>
 #include "openc2e.h"
 #include "Engine.h"
 #include "creaturesImage.h"
@@ -27,8 +27,9 @@
 SDLBackend *g_backend;
 
 SDLBackend::SDLBackend() : mainsurface(this) {
-	networkingup = false;
-	basicfont = 0;
+        networkingup = false;
+        basicfont = 0;
+        window = NULL;
 
 	// reasonable defaults
 	mainsurface.width = 800;
@@ -43,29 +44,34 @@ int SDLBackend::idealBpp() {
 }
 
 void SDLBackend::resizeNotify(int _w, int _h) {
-	mainsurface.width = _w;
-	mainsurface.height = _h;
-	mainsurface.surface = SDL_SetVideoMode(_w, _h, idealBpp(), SDL_RESIZABLE);
-	if (!mainsurface.surface)
-		throw creaturesException(std::string("Failed to create SDL surface due to: ") + SDL_GetError());
+        mainsurface.width = _w;
+        mainsurface.height = _h;
+        if (window) {
+                SDL_SetWindowSize(window, _w, _h);
+                mainsurface.surface = SDL_GetWindowSurface(window);
+        }
 }
 
 void SDLBackend::init() {
-	int init = SDL_INIT_VIDEO;
+        int init = SDL_INIT_VIDEO;
 
-	if (SDL_Init(init) < 0)
-		throw creaturesException(std::string("SDL error during initialization: ") + SDL_GetError());
+        if (SDL_Init(init) < 0)
+                throw creaturesException(std::string("SDL error during initialization: ") + SDL_GetError());
 
-	std::string windowtitle;
-	if (engine.getGameName().size()) windowtitle = engine.getGameName() + " - ";
-	windowtitle += "openc2e";
-	std::string titlebar = windowtitle + " (development build)";
-	SDL_WM_SetCaption(titlebar.c_str(), windowtitle.c_str());
+        std::string windowtitle;
+        if (engine.getGameName().size()) windowtitle = engine.getGameName() + " - ";
+        windowtitle += "openc2e";
+        std::string titlebar = windowtitle + " (development build)";
+        window = SDL_CreateWindow(titlebar.c_str(), SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                 mainsurface.width, mainsurface.height, SDL_WINDOW_RESIZABLE);
+        if (!window)
+                throw creaturesException(std::string("Failed to create SDL window: ") + SDL_GetError());
+        SDL_SetWindowTitle(window, windowtitle.c_str());
 
-	SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL);
-	SDL_ShowCursor(false);
-	// bz2 and fuzzie both think this is the only way to get useful ascii out of SDL
-	SDL_EnableUNICODE(1);
+        mainsurface.surface = SDL_GetWindowSurface(window);
+
+        SDL_ShowCursor(SDL_DISABLE);
+        SDL_StartTextInput();
 
 	if (TTF_Init() == 0) {
 		// TODO: think about font sizing
@@ -158,12 +164,15 @@ retry:
 	if (!SDL_PollEvent(&event)) return false;
 
 	switch (event.type) {
-		case SDL_VIDEORESIZE:
-			resizeNotify(event.resize.w, event.resize.h);
-			e.type = eventresizewindow;
-			e.x = event.resize.w;
-			e.y = event.resize.h;
-			break;
+                case SDL_WINDOWEVENT:
+                        if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+                                resizeNotify(event.window.data1, event.window.data2);
+                                e.type = eventresizewindow;
+                                e.x = event.window.data1;
+                                e.y = event.window.data2;
+                                break;
+                        }
+                        goto retry;
 
 		case SDL_MOUSEMOTION:
 			e.type = eventmousemove;
@@ -213,20 +222,24 @@ retry:
                 goto retry;
             }
 
-		case SDL_KEYDOWN:
-			if ((event.key.keysym.unicode) && ((event.key.keysym.unicode & 0xFF80) == 0) && (event.key.keysym.unicode >= 32)) {
-				e.type = eventkeydown;
-				e.key = event.key.keysym.unicode & 0x7F;
-				return true;
-			} else { // TODO: should this be 'else'?
-				int key = translateKey(event.key.keysym.sym);
-				if (key != -1) {
-					e.type = eventspecialkeydown;
-					e.key = key;
-					return true;
-				}
-			}
-			goto retry;
+                case SDL_TEXTINPUT:
+                        if (event.text.text[0] && !event.text.text[1]) {
+                                e.type = eventkeydown;
+                                e.key = event.text.text[0] & 0x7F;
+                                return true;
+                        }
+                        goto retry;
+
+                case SDL_KEYDOWN:
+                        {
+                                int key = translateKey(event.key.keysym.sym);
+                                if (key != -1) {
+                                        e.type = eventspecialkeydown;
+                                        e.key = key;
+                                        return true;
+                                }
+                        }
+                        goto retry;
             break;
 
 		case SDL_QUIT:
@@ -426,7 +439,9 @@ void SDLSurface::render(shared_ptr<creaturesImage> image, unsigned int frame, in
 }
 
 void SDLSurface::renderDone() {
-	SDL_Flip(surface);
+        if (this == &parent->mainsurface && parent->window) {
+                SDL_UpdateWindowSurface(parent->window);
+        }
 }
 
 void SDLSurface::blitSurface(Surface *s, int x, int y, int w, int h) {
@@ -440,7 +455,7 @@ void SDLSurface::blitSurface(Surface *s, int x, int y, int w, int h) {
 
 Surface *SDLBackend::newSurface(unsigned int w, unsigned int h) {
 	SDL_Surface *surf = mainsurface.surface;
-	SDL_Surface* underlyingsurf = SDL_CreateRGBSurface(SDL_HWSURFACE, w, h, surf->format->BitsPerPixel, surf->format->Rmask, surf->format->Gmask, surf->format->Bmask, surf->format->Amask);
+        SDL_Surface* underlyingsurf = SDL_CreateRGBSurface(0, w, h, surf->format->BitsPerPixel, surf->format->Rmask, surf->format->Gmask, surf->format->Bmask, surf->format->Amask);
 	assert(underlyingsurf);
 	SDLSurface *newsurf = new SDLSurface(this);
 	newsurf->surface = underlyingsurf;
@@ -490,7 +505,7 @@ struct _keytrans { int sdl, windows; } keytrans[keytrans_size] = {
  
 // TODO: this is possibly not a great idea, we should maybe maintain our own state table
 bool SDLBackend::keyDown(int key) {
-	Uint8 *keystate = SDL_GetKeyState(NULL);
+        const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 	
 	for (unsigned int i = 0; i < keytrans_size; i++) {
 		if (keytrans[i].windows == key)

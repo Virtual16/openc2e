@@ -22,7 +22,7 @@
 
 #include "SkeletonAudioBackend.h"
 
-#include "SDL_mixer.h"
+#include <SDL2/SDL_mixer.h>
 
 class SDLMixerBuffer;
 

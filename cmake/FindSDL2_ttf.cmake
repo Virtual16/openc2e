@@ -1,0 +1,7 @@
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PC_SDL2_TTF REQUIRED SDL2_ttf)
+set(SDL2_TTF_LIBRARIES ${PC_SDL2_TTF_LIBRARIES})
+set(SDL2_TTF_INCLUDE_DIRS ${PC_SDL2_TTF_INCLUDE_DIRS})
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(SDL2_ttf DEFAULT_MSG SDL2_TTF_LIBRARIES SDL2_TTF_INCLUDE_DIRS)
+mark_as_advanced(SDL2_TTF_LIBRARIES SDL2_TTF_INCLUDE_DIRS)

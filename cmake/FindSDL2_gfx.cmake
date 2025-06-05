@@ -1,0 +1,7 @@
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(PC_SDL2_GFX REQUIRED SDL2_gfx)
+set(SDL2_GFX_LIBRARIES ${PC_SDL2_GFX_LIBRARIES})
+set(SDL2_GFX_INCLUDE_DIRS ${PC_SDL2_GFX_INCLUDE_DIRS})
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(SDL2_gfx DEFAULT_MSG SDL2_GFX_LIBRARIES SDL2_GFX_INCLUDE_DIRS)
+mark_as_advanced(SDL2_GFX_LIBRARIES SDL2_GFX_INCLUDE_DIRS)

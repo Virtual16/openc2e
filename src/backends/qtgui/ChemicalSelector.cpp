@@ -6,7 +6,7 @@
 #include <iostream>
 #include "Engine.h"
 #include "Catalogue.h"
-#include <QtGui>
+#include <QtWidgets>
 #include <boost/format.hpp>
 
 ChemicalSelector::ChemicalSelector(CreatureGrapher *p): QWidget(p), parent(p) {
@@ -103,9 +103,9 @@ ChemicalSelector::ChemicalSelector(CreatureGrapher *p): QWidget(p), parent(p) {
 
 	grouplist = new QListWidget(this);
 	if (chemgroups.size() == 0) grouplist->hide();
-	connect(grouplist, SIGNAL(itemSelectionChanged()), this, SLOT(onGroupChange()));
+        connect(grouplist, &QListWidget::itemSelectionChanged, this, &ChemicalSelector::onGroupChange);
 	chemlist = new QListWidget(this);
-	connect(chemlist, SIGNAL(itemChanged(QListWidgetItem*)), this, SLOT(onChemChange(QListWidgetItem*)));
+        connect(chemlist, &QListWidget::itemChanged, this, &ChemicalSelector::onChemChange);
 	
 	// add the implicit "All" group.
 	for (std::map<unsigned int, std::string>::iterator i = chemnames.begin(); i != chemnames.end(); i++) {

@@ -25,7 +25,7 @@
 #include <boost/foreach.hpp>
 #include <boost/lambda/bind.hpp>
 #include <boost/lambda/lambda.hpp>
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "exceptions.h"
 #include "World.h"
 

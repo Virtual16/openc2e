@@ -18,7 +18,7 @@
  */
 
 #include "SDLMixerBackend.h"
-#include "SDL.h"
+#include <SDL2/SDL.h>
 #include "exceptions.h"
 #include "World.h"
 
