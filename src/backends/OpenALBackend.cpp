@@ -21,10 +21,8 @@
 #include <alut.h>
 #include <iostream>
 #include <boost/format.hpp>
-#include <boost/thread.hpp>
 #include <boost/foreach.hpp>
-#include <boost/lambda/bind.hpp>
-#include <boost/lambda/lambda.hpp>
+#include <thread>
 #include "SDL.h"
 #include "exceptions.h"
 #include "World.h"
@@ -133,16 +131,18 @@ void OpenALBackend::setViewpointCenter(float x, float y) {
 }
 
 void OpenALBackend::shutdown() {
-	using namespace boost::lambda;
+        bgmSource.reset();
 
-	bgmSource.reset();
+        OpenALSource::SourceList sl = activeSources;
+        for (auto *src : sl) {
+                [src]() { src->forceCleanup(); }();
+        }
 
-	OpenALSource::SourceList sl = activeSources;
-	std::for_each(sl.begin(), sl.end(), boost::lambda::bind(&OpenALSource::forceCleanup, *boost::lambda::_1));
-
-	// beware, forceCleanup will release most(/all?) buffers
-	OpenALBuffer::BufferList bl = activeBuffers;
-	std::for_each(bl.begin(), bl.end(), boost::lambda::bind(&OpenALBuffer::destroy, *boost::lambda::_1));
+        // beware, forceCleanup will release most(/all?) buffers
+        OpenALBuffer::BufferList bl = activeBuffers;
+        for (auto *buf : bl) {
+                [buf]() { buf->destroy(); }();
+        }
 	
 	alcMakeContextCurrent(NULL);
 	alcDestroyContext(context);
@@ -472,8 +472,9 @@ static void fadeSource(boost::weak_ptr<AudioSource> s) {
 }
 
 void OpenALSource::fadeOut() {
-	CHECK_BACKEND_LIFE;
-	boost::thread th(boost::lambda::bind<void>(fadeSource, shared_from_this()));
+        CHECK_BACKEND_LIFE;
+        auto self = shared_from_this();
+        std::thread([self]() { fadeSource(self); }).detach();
 }
 
 void OpenALSource::realSetPos(float x, float y, float plane) {
