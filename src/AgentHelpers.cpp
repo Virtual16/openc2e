@@ -40,7 +40,7 @@ bool agentIsVisible(Agent *seeing, Agent *a, float ownerx, float ownery, MetaRoo
 	double deltay = thisy - ownery; deltay *= deltay;
 	if ((deltax + deltay) > (seeing->range.getFloat() * seeing->range.getFloat())) return false;
 
-	// do the actual visibiltiy check using a line between centers
+       // do the actual visibility check using a line between centers
 	Point src(ownerx, ownery), dest(thisx, thisy);
 	Line dummywall; unsigned int dummydir;
 	shared_ptr<Room> newroom = ownerroom;
