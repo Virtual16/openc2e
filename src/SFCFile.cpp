@@ -25,6 +25,7 @@
 #include "Camera.h"
 #include "exceptions.h"
 #include "Agent.h"
+#include <vector>
 
 /*
  * sfcdumper.py has better commentary on this format - use it for debugging
@@ -262,15 +263,21 @@ std::string SFCFile::readstring() {
 			strlen = read32();
 	}
 
-	return readBytes(strlen);
+       if (strlen == 0)
+               return std::string();
+
+       std::vector<char> buffer(strlen);
+       ourStream->read(buffer.data(), strlen);
+       return std::string(buffer.data(), strlen);
 }
 
 std::string SFCFile::readBytes(unsigned int n) {
-	char *temp = new char[n];
-	ourStream->read(temp, n);
-	std::string t = std::string(temp, n);
-	delete[] temp;
-	return t;
+       if (n == 0)
+               return std::string();
+
+       std::vector<char> buffer(n);
+       ourStream->read(buffer.data(), n);
+       return std::string(buffer.data(), n);
 }
 
 void SFCFile::setVersion(unsigned int v) {
