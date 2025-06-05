@@ -1,7 +1,7 @@
 # Note: This will rebuild some .o files.
 # currently, cmake can't link object files directly.
-# It would be cleanest to seperate out a libmng, libpray, etc.
-# into seperate project subdirs, and then have tools depend on that.
+# It would be cleanest to separate out a libmng, libpray, etc.
+# into separate project subdirs, and then have tools depend on that.
 
 PROJECT (OPENC2E_TOOLS CXX)
 
