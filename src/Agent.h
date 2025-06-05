@@ -21,7 +21,6 @@
 #define __AGENT_H
 
 #include "AgentRef.h"
-#include <boost/enable_shared_from_this.hpp>
 #include <memory>
 #include "caosVar.h"
 #include "CompoundPart.h"
@@ -39,7 +38,7 @@ struct agentzorder {
 	bool operator()(const class Agent *s1, const class Agent *s2) const;
 };
 
-class Agent : public boost::enable_shared_from_this<Agent> {
+class Agent : public std::enable_shared_from_this<Agent> {
 	
 	friend struct agentzorder;
 	friend class caosVM;
