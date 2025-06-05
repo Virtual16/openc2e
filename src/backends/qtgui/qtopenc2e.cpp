@@ -20,6 +20,15 @@
 #include <QAction>
 #include <QMessageBox>
 #include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
+#include <QDockWidget>
+#include <QScrollBar>
+#include <QScrollArea>
+#include <QHBoxLayout>
+#include <QToolBar>
+#include <QStatusBar>
+#include <QComboBox>
 #include "openc2eview.h"
 #include "Engine.h"
 #include "AudioBackend.h"
