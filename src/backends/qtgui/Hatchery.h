@@ -19,7 +19,7 @@
 
 #include <QDialog>
 #include <QPixmap>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Hatchery : public QDialog {
 	Q_OBJECT
@@ -38,7 +38,7 @@ class Hatchery : public QDialog {
 		// unknown, male, female
 		QPixmap genderanim[3][16];
 
-		boost::shared_ptr<class creaturesImage> omelettedata;
+		std::shared_ptr<class creaturesImage> omelettedata;
 };
 
 #endif /* HATCHERY_H */

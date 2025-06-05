@@ -30,8 +30,8 @@
 #include "lazy_array.h"
 
 #include <boost/variant.hpp>
-#include <boost/weak_ptr.hpp>
-using boost::weak_ptr;
+#include <memory>
+using std::weak_ptr;
 
 class script;
 
@@ -176,7 +176,7 @@ public:
 	const caosVM_p vm; // == this
 	
 	// script state...
-	shared_ptr<script> currentscript;
+	std::shared_ptr<script> currentscript;
 	int nip, cip, runops;
 	
 	bool inst, lock, stop_loop;
@@ -1100,11 +1100,11 @@ public:
 	void invoke_cmd(script *s, bool is_saver, int opidx);
 	void runOpCore(script *s, struct caosOp op);
 	void runOp();
-	void runEntirely(shared_ptr<script> s);
+	void runEntirely(std::shared_ptr<script> s);
 
 	void tick();
 	void stop();
-	bool fireScript(shared_ptr<script> s, bool nointerrupt, Agent *frm = 0);
+	bool fireScript(std::shared_ptr<script> s, bool nointerrupt, Agent *frm = 0);
 
 	caosVM(const AgentRef &o);
 	~caosVM();
@@ -1160,7 +1160,7 @@ class caosVM__lval {
 	name = __x.getRVal().getFloat(); } vm->valueStack.pop_back();
 #define VM_PARAM_VECTOR(name) Vector<float> name; { VM_STACK_CHECK(vm); vmStackItem __x = vm->valueStack.back(); \
 	name = __x.getRVal().getVector(); } vm->valueStack.pop_back();
-#define VM_PARAM_AGENT(name) boost::shared_ptr<Agent> name; { VM_STACK_CHECK(vm); vmStackItem __x = vm->valueStack.back(); \
+#define VM_PARAM_AGENT(name) std::shared_ptr<Agent> name; { VM_STACK_CHECK(vm); vmStackItem __x = vm->valueStack.back(); \
 	name = __x.getRVal().getAgent(); } vm->valueStack.pop_back();
 // TODO: is usage of valid_agent correct here, or should we be caos_asserting?
 #define VM_PARAM_VALIDAGENT(name) VM_PARAM_AGENT(name) valid_agent(name);

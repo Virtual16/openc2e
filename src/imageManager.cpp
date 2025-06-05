@@ -40,7 +40,7 @@ using namespace boost::filesystem;
 
 enum filetype { blk, s16, c16, spr, bmp };
 
-bool tryOpen(mmapifstream *in, shared_ptr<creaturesImage> &img, std::string fname, filetype ft) {
+bool tryOpen(mmapifstream *in, std::shared_ptr<creaturesImage> &img, std::string fname, filetype ft) {
 	path cachefile, realfile;
 	std::string cachename;
 	if (fname.size() < 5) return false; // not enough chars for an extension and filename..
@@ -108,11 +108,11 @@ bool tryOpen(mmapifstream *in, shared_ptr<creaturesImage> &img, std::string fnam
 done:
 	if (in->is_open()) {
 		switch (ft) {
-			case blk: img = shared_ptr<creaturesImage>(new blkImage(in, basename)); break;
-			case c16: img = shared_ptr<creaturesImage>(new c16Image(in, basename)); break; // this should never happen, actually, once we're done
-			case s16: img = shared_ptr<creaturesImage>(new s16Image(in, basename)); break;
-			case spr: img = shared_ptr<creaturesImage>(new sprImage(in, basename)); break;
-			case bmp: img = shared_ptr<creaturesImage>(new bmpImage(in, basename)); break; // TODO: don't commit this ;p
+			case blk: img = std::shared_ptr<creaturesImage>(new blkImage(in, basename)); break;
+			case c16: img = std::shared_ptr<creaturesImage>(new c16Image(in, basename)); break; // this should never happen, actually, once we're done
+			case s16: img = std::shared_ptr<creaturesImage>(new s16Image(in, basename)); break;
+			case spr: img = std::shared_ptr<creaturesImage>(new sprImage(in, basename)); break;
+			case bmp: img = std::shared_ptr<creaturesImage>(new bmpImage(in, basename)); break; // TODO: don't commit this ;p
 		}
 	}
 	return in->is_open();
@@ -122,18 +122,18 @@ done:
  * Retrieve an image for rendering use. To retrieve a sprite, pass the name without
  * extension. To retrieve a background, pass the full filename (ie, with .blk).
  */
-shared_ptr<creaturesImage> imageManager::getImage(std::string name, bool is_background) {
-	if (name.empty()) return shared_ptr<creaturesImage>(); // empty sprites definitely don't exist
+std::shared_ptr<creaturesImage> imageManager::getImage(std::string name, bool is_background) {
+	if (name.empty()) return std::shared_ptr<creaturesImage>(); // empty sprites definitely don't exist
 
 	// step one: see if the image is already in the gallery
-	std::map<std::string, boost::weak_ptr<creaturesImage> >::iterator i = images.find(name);
+	std::map<std::string, std::weak_ptr<creaturesImage> >::iterator i = images.find(name);
 	if (i != images.end() && i->second.lock()) {
 		if (!is_background) return i->second.lock(); // TODO: handle backgrounds
 	}
 
 	// step two: try opening it in .c16 form first, then try .s16 form
 	mmapifstream *in = new mmapifstream();
-	shared_ptr<creaturesImage> img;
+	std::shared_ptr<creaturesImage> img;
 
 	std::string fname;
 	if (is_background) {
@@ -166,7 +166,7 @@ shared_ptr<creaturesImage> imageManager::getImage(std::string name, bool is_back
 	} else {
 		std::cerr << "imageGallery couldn't find the sprite '" << name << "'" << std::endl;
 		delete in;
-		return shared_ptr<creaturesImage>();
+		return std::shared_ptr<creaturesImage>();
 	}
 
 	in->close(); // doesn't close the mmap, which we still need :)

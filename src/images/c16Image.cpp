@@ -45,7 +45,7 @@ void c16Image::readHeader(std::istream &in) {
 	}
 }
 
-shared_ptr<creaturesImage> c16Image::mutableCopy() {
+std::shared_ptr<creaturesImage> c16Image::mutableCopy() {
 	s16Image *img = new s16Image();
 
 	img->imgformat = if_16bit;
@@ -62,10 +62,10 @@ shared_ptr<creaturesImage> c16Image::mutableCopy() {
 		memcpy(img->buffers[i], buffers[i], widths[i] * heights[i] * 2);
 	}
 
-	return shared_ptr<creaturesImage>(img);
+	return std::shared_ptr<creaturesImage>(img);
 }
 
-shared_ptr<creaturesImage> s16Image::mutableCopy() {
+std::shared_ptr<creaturesImage> s16Image::mutableCopy() {
 	s16Image *img = new s16Image();
 
 	img->imgformat = if_16bit;
@@ -82,7 +82,7 @@ shared_ptr<creaturesImage> s16Image::mutableCopy() {
 		memcpy(img->buffers[i], buffers[i], widths[i] * heights[i] * 2);
 	}
 	
-	return shared_ptr<creaturesImage>(img);
+	return std::shared_ptr<creaturesImage>(img);
 }
 
 c16Image::c16Image(mmapifstream *in, std::string n) : creaturesImage(n) {

@@ -71,7 +71,7 @@ void World::init() {
 	if (engine.version > 2 && catalogue.hasTag("Pointer Information")) {
 		const std::vector<std::string> &pointerinfo = catalogue.getTag("Pointer Information");
 		if (pointerinfo.size() >= 3) {
-			shared_ptr<creaturesImage> img = gallery.getImage(pointerinfo[2]);
+			std::shared_ptr<creaturesImage> img = gallery.getImage(pointerinfo[2]);
 			if (img) {
 				theHand = new PointerAgent(pointerinfo[2]);
 				int family, genus, species;
@@ -97,7 +97,7 @@ void World::init() {
 	
 	// If for some reason we failed to do that (missing/bad catalogue tag? missing file?), try falling back to a sane default.
 	if (!theHand) {
-		shared_ptr<creaturesImage> img;
+		std::shared_ptr<creaturesImage> img;
 		if (gametype == "c3")
 			img = gallery.getImage("hand"); // as used in C3 and DS
 		else
@@ -215,9 +215,9 @@ void World::tick() {
 	// Notify the audio backend about our current viewpoint center.
 	engine.audio->setViewpointCenter(camera->getXCentre(), camera->getYCentre());
 	
-	std::list<std::pair<boost::shared_ptr<AudioSource>, bool> >::iterator si = uncontrolled_sounds.begin();
+	std::list<std::pair<std::shared_ptr<AudioSource>, bool> >::iterator si = uncontrolled_sounds.begin();
 	while (si != uncontrolled_sounds.end()) {
-		std::list<std::pair<boost::shared_ptr<AudioSource>, bool> >::iterator next = si; next++;
+		std::list<std::pair<std::shared_ptr<AudioSource>, bool> >::iterator next = si; next++;
 		if (si->first->getState() != SS_PLAY) {
 			// sound is stopped, so release our reference
 			uncontrolled_sounds.erase(si);
@@ -240,11 +240,11 @@ void World::tick() {
 	musicmanager.tick();
 	
 	// Tick all agents, deleting as necessary.	
-	std::list<boost::shared_ptr<Agent> >::iterator i = agents.begin();
+	std::list<std::shared_ptr<Agent> >::iterator i = agents.begin();
 	while (i != agents.end()) {
-		boost::shared_ptr<Agent> a = *i;
+		std::shared_ptr<Agent> a = *i;
 		if (!a) {
-			std::list<boost::shared_ptr<Agent> >::iterator i2 = i;
+			std::list<std::shared_ptr<Agent> >::iterator i2 = i;
 			i2++;
 			agents.erase(i);
 			i = i2;
@@ -257,7 +257,7 @@ void World::tick() {
 	// Process the script queue.
 	std::list<scriptevent> newqueue;
 	for (std::list<scriptevent>::iterator i = scriptqueue.begin(); i != scriptqueue.end(); i++) {
-		boost::shared_ptr<Agent> agent = i->agent.lock();
+		std::shared_ptr<Agent> agent = i->agent.lock();
 		if (agent) {
 			if (engine.version < 3) {
 				// only try running a collision script if the agent doesn't have a running script
@@ -378,8 +378,8 @@ void World::freeUNID(int unid) {
 	unidmap.erase(unid);
 }
 
-shared_ptr<Agent> World::lookupUNID(int unid) {
-	if (unid == 0) return shared_ptr<Agent>();
+std::shared_ptr<Agent> World::lookupUNID(int unid) {
+	if (unid == 0) return std::shared_ptr<Agent>();
 	return unidmap[unid].lock();
 }
 
@@ -401,7 +401,7 @@ void World::drawWorld(Camera *cam, Surface *surface) {
 	}
 	int adjustx = cam->getX();
 	int adjusty = cam->getY();
-	shared_ptr<creaturesImage> bkgd = m->getBackground(""); // TODO
+	std::shared_ptr<creaturesImage> bkgd = m->getBackground(""); // TODO
 
 	// TODO: work out what c2e does when it doesn't have a background..
 	if (!bkgd) return;
@@ -453,10 +453,10 @@ void World::drawWorld(Camera *cam, Surface *surface) {
 
 	// render port connection lines. TODO: these should be rendered as some kind
 	// of renderable, not directly like this.
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
-		boost::shared_ptr<Agent> a = *i;
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+		std::shared_ptr<Agent> a = *i;
 		if (!a) continue;
-		for (std::map<unsigned int, boost::shared_ptr<OutputPort> >::iterator p = a->outports.begin();
+		for (std::map<unsigned int, std::shared_ptr<OutputPort> >::iterator p = a->outports.begin();
 		     p != a->outports.end(); p++) {
 			for (PortConnectionList::iterator c = p->second->dests.begin(); c != p->second->dests.end(); c++) {
 				if (!c->first) continue;
@@ -468,8 +468,8 @@ void World::drawWorld(Camera *cam, Surface *surface) {
 	}
 
 	if (showrooms) {
-		shared_ptr<Room> r = map.roomAt(hand()->x, hand()->y);
-		for (std::vector<shared_ptr<Room> >::iterator i = cam->getMetaRoom()->rooms.begin();
+		std::shared_ptr<Room> r = map.roomAt(hand()->x, hand()->y);
+		for (std::vector<std::shared_ptr<Room> >::iterator i = cam->getMetaRoom()->rooms.begin();
 				 i != cam->getMetaRoom()->rooms.end(); i++) {
 			unsigned int col = 0xFFFF00CC;
 			if (*i == r) col = 0xFF00FFCC;
@@ -646,14 +646,14 @@ std::string World::getUserDataDir() {
        return (data_directories.end() - 1)->string();
 }
 
-void World::selectCreature(boost::shared_ptr<Agent> a) {
+void World::selectCreature(std::shared_ptr<Agent> a) {
 	if (a) {
 		CreatureAgent *c = dynamic_cast<CreatureAgent *>(a.get());
 		caos_assert(c);
 	}
 
 	if (selectedcreature != a) {
-		for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+		for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
 			if (!*i) continue;
 			(*i)->queueScript(120, 0, caosVar(a), caosVar(selectedcreature)); // selected creature changed
 		}
@@ -662,12 +662,12 @@ void World::selectCreature(boost::shared_ptr<Agent> a) {
 	}
 }
 
-shared_ptr<genomeFile> World::loadGenome(std::string &genefile) {
+std::shared_ptr<genomeFile> World::loadGenome(std::string &genefile) {
 	std::vector<std::string> possibles = findFiles("/Genetics/", genefile + ".gen");
-	if (possibles.empty()) return shared_ptr<genomeFile>();
+	if (possibles.empty()) return std::shared_ptr<genomeFile>();
 	genefile = possibles[(int)((float)possibles.size() * (rand() / (RAND_MAX + 1.0)))];
 
-	shared_ptr<genomeFile> p(new genomeFile());
+	std::shared_ptr<genomeFile> p(new genomeFile());
 	std::ifstream gfile(genefile.c_str(), std::ios::binary);
 	caos_assert(gfile.is_open());
 	gfile >> std::noskipws;
@@ -676,7 +676,7 @@ shared_ptr<genomeFile> World::loadGenome(std::string &genefile) {
 	return p;
 }
 
-void World::newMoniker(shared_ptr<genomeFile> g, std::string genefile, AgentRef agent) {
+void World::newMoniker(std::shared_ptr<genomeFile> g, std::string genefile, AgentRef agent) {
 	std::string d = history.newMoniker(g);
 	world.history.getMoniker(d).addEvent(2, "", genefile);
 	world.history.getMoniker(d).moveToAgent(agent);
@@ -709,16 +709,16 @@ std::string World::generateMoniker(std::string basename) {
 	return x;
 }
 
-boost::shared_ptr<AudioSource> World::playAudio(std::string filename, AgentRef agent, bool controlled, bool loop, bool followviewport) {
-	if (filename.size() == 0) return boost::shared_ptr<AudioSource>();
+std::shared_ptr<AudioSource> World::playAudio(std::string filename, AgentRef agent, bool controlled, bool loop, bool followviewport) {
+	if (filename.size() == 0) return std::shared_ptr<AudioSource>();
 
-	boost::shared_ptr<AudioSource> sound = engine.audio->newSource();
-	if (!sound) return boost::shared_ptr<AudioSource>();
+	std::shared_ptr<AudioSource> sound = engine.audio->newSource();
+	if (!sound) return std::shared_ptr<AudioSource>();
 
 	AudioClip clip = engine.audio->loadClip(filename);
 	if (!clip) {
 		// note that more specific error messages can be thrown by implementations of loadClip
-		if (engine.version < 3) return boost::shared_ptr<AudioSource>(); // creatures 1 and 2 ignore non-existent audio clips
+		if (engine.version < 3) return std::shared_ptr<AudioSource>(); // creatures 1 and 2 ignore non-existent audio clips
 		throw creaturesException("failed to load audio clip " + filename);
 	}
 
@@ -736,13 +736,13 @@ boost::shared_ptr<AudioSource> World::playAudio(std::string filename, AgentRef a
 		if (controlled)
 			agent->sound = sound;
 		else
-			uncontrolled_sounds.push_back(std::pair<boost::shared_ptr<class AudioSource>, bool>(sound, false));
+			uncontrolled_sounds.push_back(std::pair<std::shared_ptr<class AudioSource>, bool>(sound, false));
 	} else {
 		assert(!controlled);
 
 		// TODO: handle non-agent sounds
 		sound->setPos(camera->getXCentre(), camera->getYCentre(), 0);
-		uncontrolled_sounds.push_back(std::pair<boost::shared_ptr<class AudioSource>, bool>(sound, followviewport));
+		uncontrolled_sounds.push_back(std::pair<std::shared_ptr<class AudioSource>, bool>(sound, followviewport));
 	}
 	
 	sound->play();

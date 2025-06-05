@@ -22,7 +22,7 @@
 
 #include "AgentRef.h"
 #include <boost/enable_shared_from_this.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include "caosVar.h"
 #include "CompoundPart.h"
 #include <list>
@@ -70,7 +70,7 @@ protected:
 	
 	int unused_cint;
 	
-	std::map<unsigned int, boost::shared_ptr<genomeFile> > genome_slots;
+	std::map<unsigned int, std::shared_ptr<genomeFile> > genome_slots;
 	
 	class caosVM *vm;
 
@@ -86,11 +86,11 @@ protected:
 	int lastcollidedirection;
 
 	std::multiset<Agent *, agentzorder>::iterator zorder_iter;
-	std::list<boost::shared_ptr<Agent> >::iterator agents_iter;
+	std::list<std::shared_ptr<Agent> >::iterator agents_iter;
 	std::list<caosVM *> vmstack; // for CALL etc
 	std::vector<AgentRef> floated;
 
-	void updateAudio(boost::shared_ptr<class AudioSource>);
+	void updateAudio(std::shared_ptr<class AudioSource>);
 	bool dying : 1;
 	
 	void vmTick();
@@ -109,17 +109,17 @@ protected:
 public:
 	std::map<unsigned int, std::pair<int, int> > carry_points, carried_points;
 
-	boost::shared_ptr<class VoiceData> voice;
+	std::shared_ptr<class VoiceData> voice;
 	std::vector<std::pair<std::string, unsigned int> > pending_voices;
 	void setVoice(std::string name);
 	void speak(std::string sentence);
 	void tickVoices();
 	
-	boost::shared_ptr<class AudioSource> sound;
+	std::shared_ptr<class AudioSource> sound;
 
 	// these are maps rather than vectors because ports can be destroyed
-	std::map<unsigned int, boost::shared_ptr<InputPort> > inports; // XXX: do these need to be shared_ptr?
-	std::map<unsigned int, boost::shared_ptr<OutputPort> > outports;
+	std::map<unsigned int, std::shared_ptr<InputPort> > inports; // XXX: do these need to be shared_ptr?
+	std::map<unsigned int, std::shared_ptr<OutputPort> > outports;
 
 	void join(unsigned int outid, AgentRef dest, unsigned int inid);
 
@@ -202,7 +202,7 @@ public:
 
 	bool falling : 1; // TODO: icky hack, possibly
 	bool moved_last_tick : 1; // TODO: icky hack
-	boost::weak_ptr<class Room> roomcache[5];
+	std::weak_ptr<class Room> roomcache[5];
 
 	caosVar range;
 
@@ -250,7 +250,7 @@ public:
 	unsigned int getHeight() { return part(0)->getHeight(); }
 	Point const boundingBoxPoint(unsigned int n);
 	Point const boundingBoxPoint(unsigned int n, Point p, float w, float h);
-	shared_ptr<class Room> const bestRoomAt(unsigned int x, unsigned int y, unsigned int direction, class MetaRoom *m, shared_ptr<Room> exclude);
+	std::shared_ptr<class Room> const bestRoomAt(unsigned int x, unsigned int y, unsigned int direction, class MetaRoom *m, std::shared_ptr<Room> exclude);
 	void findCollisionInDirection(unsigned int i, class MetaRoom *m, Point src, int &dx, int &dy, Point &deltapt, double &delta, bool &collided, bool followrooms);
 
 	bool validInRoomSystem();
@@ -263,7 +263,7 @@ public:
 	virtual void setZOrder(unsigned int plane); // should be overridden!
 	virtual unsigned int getZOrder() const;
 
-	class shared_ptr<script> findScript(unsigned short event);
+	class std::shared_ptr<script> findScript(unsigned short event);
 	
 	int getUNID() const;
 	std::string identify() const;
@@ -273,7 +273,7 @@ public:
 
 	void playAudio(std::string filename, bool controlled, bool loop);
 
-	boost::shared_ptr<genomeFile> getSlot(unsigned int s) { return genome_slots[s]; }
+	std::shared_ptr<genomeFile> getSlot(unsigned int s) { return genome_slots[s]; }
 };
 
 class LifeAssert {
@@ -285,12 +285,12 @@ class LifeAssert {
 			assert(p);
 			p->lifecount++;
 		}
-		LifeAssert(const boost::weak_ptr<Agent> &p_) {
+		LifeAssert(const std::weak_ptr<Agent> &p_) {
 			p = p_.lock().get();
 			assert(p);
 			p->lifecount++;
 		}
-		LifeAssert(const boost::shared_ptr<Agent> &p_) {
+		LifeAssert(const std::shared_ptr<Agent> &p_) {
 			p = p_.get();
 			assert(p);
 			p->lifecount++;

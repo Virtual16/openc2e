@@ -4,7 +4,7 @@
 #include "cmddata.h"
 #include <string>
 #include <map>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class Dialect {
 	private:
@@ -26,7 +26,7 @@ class Dialect {
 		int cmd_index(const cmdinfo *) const;
 };
 
-extern std::map<std::string, boost::shared_ptr<Dialect> > dialects;
+extern std::map<std::string, std::shared_ptr<Dialect> > dialects;
 
 void registerDelegates();
 void freeDelegates();

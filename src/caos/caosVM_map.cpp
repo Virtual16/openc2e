@@ -32,7 +32,7 @@ using std::cerr;
 
 #define CAOS_LVALUE_TARG_ROOM(name, check, get, set) \
 	CAOS_LVALUE_TARG(name, \
-			shared_ptr<Room> r = roomContainingAgent(targ); \
+			std::shared_ptr<Room> r = roomContainingAgent(targ); \
 			caos_assert(r); \
 			check, \
 			get, \
@@ -180,7 +180,7 @@ void caosVM::v_ADDR() {
 	VM_PARAM_INTEGER(x_left)
 	VM_PARAM_INTEGER(metaroomid)
 
-	shared_ptr<Room> r(new Room(x_left, x_right,
+	std::shared_ptr<Room> r(new Room(x_left, x_right,
 			y_left_ceiling, y_right_ceiling,
 			y_left_floor, y_right_floor));
 	MetaRoom *m = world.map.getMetaRoom(metaroomid);
@@ -201,7 +201,7 @@ void caosVM::c_RTYP() {
 	VM_PARAM_INTEGER(roomtype)
 	VM_PARAM_INTEGER(roomid)
 
-	shared_ptr<Room> room = world.map.getRoom(roomid);
+	std::shared_ptr<Room> room = world.map.getRoom(roomid);
 	caos_assert(room);
 	room->type = roomtype;
 }
@@ -216,7 +216,7 @@ void caosVM::v_RTYP() {
 	VM_VERIFY_SIZE(1)
 	VM_PARAM_INTEGER(roomid)
 
-	shared_ptr<Room> room = world.map.getRoom(roomid);
+	std::shared_ptr<Room> room = world.map.getRoom(roomid);
 	if (room)
 		result.setInt(room->type.getInt());
 	else
@@ -233,7 +233,7 @@ void caosVM::v_RTYP() {
 */
 void caosVM::v_RTYP_c2() {
 	valid_agent(targ);
-	shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
+	std::shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
 	if (!r) result.setInt(-1);
 	else {
 		result.setInt(r->type.getInt());
@@ -254,7 +254,7 @@ void caosVM::c_SETV_RTYP() {
 	// TODO: this does actually work on targ, right?
 	// seems to work for the airlock, anyway  -nornagon
 	valid_agent(targ);
-	shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
+	std::shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
 	if (!r) return; // TODO: correct behaviour?
 	else
 		r->type.setInt(roomtype);
@@ -272,8 +272,8 @@ void caosVM::c_DOOR() {
 	VM_PARAM_INTEGER(room2)
 	VM_PARAM_INTEGER(room1)
 
-	shared_ptr<Room> r1 = world.map.getRoom(room1);
-	shared_ptr<Room> r2 = world.map.getRoom(room2);
+	std::shared_ptr<Room> r1 = world.map.getRoom(room1);
+	std::shared_ptr<Room> r2 = world.map.getRoom(room2);
 	caos_assert(r1); caos_assert(r2);
 	if (r1->doors.find(r2) == r1->doors.end()) {
 		RoomDoor *door = new RoomDoor;
@@ -332,7 +332,7 @@ void caosVM::v_ROOM() {
 	VM_VERIFY_SIZE(1)
 	VM_PARAM_VALIDAGENT(agent)
 	
-	shared_ptr<Room> r = roomContainingAgent(agent);
+	std::shared_ptr<Room> r = roomContainingAgent(agent);
 	if (r)
 		result.setInt(r->id);
 	else
@@ -407,7 +407,7 @@ void caosVM::c_PROP() {
 		caos_assert(0.0f <= cavalue);
 	caos_assert(0 <= caindex && caindex <= 19);
 
-	shared_ptr<Room> room = world.map.getRoom(roomid);
+	std::shared_ptr<Room> room = world.map.getRoom(roomid);
 	caos_assert(room);
 	room->ca[caindex] = cavalue;
 }
@@ -430,7 +430,7 @@ void caosVM::v_PROP() {
 		return;
 	}
 	
-	shared_ptr<Room> room = world.map.getRoom(roomid);
+	std::shared_ptr<Room> room = world.map.getRoom(roomid);
 	caos_assert(room);
 		result.setFloat(room->ca[caindex]);
 }
@@ -477,7 +477,7 @@ void caosVM::v_GRAP() {
 	VM_PARAM_FLOAT(y)
 	VM_PARAM_FLOAT(x)
 
-	shared_ptr<Room> room = world.map.roomAt(x, y);
+	std::shared_ptr<Room> room = world.map.roomAt(x, y);
 	if (room) {
 		result.setInt(room->id);
 	} else {
@@ -516,8 +516,8 @@ void caosVM::c_LINK() {
 	VM_PARAM_INTEGER(room2)
 	VM_PARAM_INTEGER(room1)
 
-	shared_ptr<Room> one = world.map.getRoom(room1);
-	shared_ptr<Room> two = world.map.getRoom(room2);
+	std::shared_ptr<Room> one = world.map.getRoom(room1);
+	std::shared_ptr<Room> two = world.map.getRoom(room2);
 	caos_assert(one && two);
 
 	// TODO
@@ -533,8 +533,8 @@ void caosVM::v_LINK() {
 	VM_PARAM_INTEGER(room2)
 	VM_PARAM_INTEGER(room1)
 
-	shared_ptr<Room> one = world.map.getRoom(room1);
-	shared_ptr<Room> two = world.map.getRoom(room2);
+	std::shared_ptr<Room> one = world.map.getRoom(room1);
+	std::shared_ptr<Room> two = world.map.getRoom(room2);
 	caos_assert(one && two);
 
 	result.setInt(0); // TODO
@@ -567,7 +567,7 @@ void caosVM::v_GRID() {
 			dest.y += targ->range.getFloat(); break;
 	}
 	
-	shared_ptr<Room> ourRoom = world.map.roomAt(src.x, src.y);
+	std::shared_ptr<Room> ourRoom = world.map.roomAt(src.x, src.y);
 	if (!ourRoom) {
 		// (should we REALLY check for it being in the room system, here?)
 		cerr << agent->identify() << " tried using GRID but isn't in the room system!\n";
@@ -575,7 +575,7 @@ void caosVM::v_GRID() {
 		return;
 	}
 
-	unsigned int dummy1; Line dummy2; Point point; shared_ptr<Room> room;
+	unsigned int dummy1; Line dummy2; Point point; std::shared_ptr<Room> room;
 	bool collided = world.map.collideLineWithRoomBoundaries(src, dest, ourRoom, room, point, dummy2, dummy1, targ->perm);
 
 	if (!room) result.setInt(-1);
@@ -629,7 +629,7 @@ void caosVM::c_ALTR() {
 	
 	caos_assert(0 <= caindex && caindex <= 19);
 
-	shared_ptr<Room> room;
+	std::shared_ptr<Room> room;
 	if (roomid == -1) {
 		valid_agent(targ);
 		room = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
@@ -652,7 +652,7 @@ void caosVM::c_ALTR() {
 void caosVM::v_RLOC() {
 	VM_PARAM_INTEGER(roomid)
 
-	shared_ptr<Room> r = world.map.getRoom(roomid);
+	std::shared_ptr<Room> r = world.map.getRoom(roomid);
 	caos_assert(r);
 
 	result.setString(boost::str(boost::format("%d %d %d %d %d %d") % r->x_left % r->x_right % r->y_left_ceiling % r->y_right_ceiling % r->y_left_floor % r->y_right_floor));
@@ -709,7 +709,7 @@ void caosVM::v_ERID() {
 		// TODO
 	} else {
 		MetaRoom *r = world.map.getMetaRoom(metaroom_id);
-		for (std::vector<shared_ptr<Room> >::iterator i = r->rooms.begin(); i != r->rooms.end(); i++) {
+		for (std::vector<std::shared_ptr<Room> >::iterator i = r->rooms.begin(); i != r->rooms.end(); i++) {
 			if (out.size() > 0) out = out + " ";
 			out = out + boost::str(boost::format("%d") % (*i)->id);
 		}
@@ -728,7 +728,7 @@ void caosVM::v_ERID() {
 void caosVM::c_DELR() {
 	VM_PARAM_INTEGER(room_id)
 
-	shared_ptr<Room> r = world.map.getRoom(room_id);
+	std::shared_ptr<Room> r = world.map.getRoom(room_id);
 	caos_assert(r);
 
 	// TODO
@@ -758,7 +758,7 @@ void caosVM::v_HIRP() {
 	VM_PARAM_INTEGER(caindex) caos_assert(0 <= caindex && caindex <= 19);
 	VM_PARAM_INTEGER(roomid)
 	
-	shared_ptr<Room> r = world.map.getRoom(roomid);
+	std::shared_ptr<Room> r = world.map.getRoom(roomid);
 	caos_assert(r);
 
 	result.setInt(roomid); // TODO
@@ -773,7 +773,7 @@ void caosVM::v_LORP() {
 	VM_PARAM_INTEGER(caindex) caos_assert(0 <= caindex && caindex <= 19);
 	VM_PARAM_INTEGER(roomid)
 	
-	shared_ptr<Room> r = world.map.getRoom(roomid);
+	std::shared_ptr<Room> r = world.map.getRoom(roomid);
 	caos_assert(r);
 
 	result.setInt(roomid); // TODO
@@ -786,7 +786,7 @@ void caosVM::v_LORP() {
 void caosVM::v_TORX() {
 	VM_PARAM_INTEGER(roomid)
 
-	shared_ptr<Room> r = world.map.getRoom(roomid);
+	std::shared_ptr<Room> r = world.map.getRoom(roomid);
 	caos_assert(r);
 	valid_agent(targ);
 
@@ -801,7 +801,7 @@ void caosVM::v_TORX() {
 void caosVM::v_TORY() {
 	VM_PARAM_INTEGER(roomid)
 
-	shared_ptr<Room> r = world.map.getRoom(roomid);
+	std::shared_ptr<Room> r = world.map.getRoom(roomid);
 	caos_assert(r);
 	valid_agent(targ);
 
@@ -919,7 +919,7 @@ CAOS_LVALUE_ROOM_SIMPLE(PSRC, r->psrc)
 */
 void caosVM::v_WNDX() {
 	valid_agent(targ);
-	shared_ptr<Room> r = roomContainingAgent(targ);
+	std::shared_ptr<Room> r = roomContainingAgent(targ);
 	caos_assert(r);
 	result.setInt(r->windx);
 }
@@ -931,7 +931,7 @@ void caosVM::v_WNDX() {
 */
 void caosVM::v_WNDY() {
 	valid_agent(targ);
-	shared_ptr<Room> r = roomContainingAgent(targ);
+	std::shared_ptr<Room> r = roomContainingAgent(targ);
 	caos_assert(r);
 	result.setInt(r->windy);
 }
@@ -960,8 +960,8 @@ void caosVM::c_SETV_DOOR() {
 	// TODO: what's direction for?
 
 	// code identical to c2e DOOR
-	shared_ptr<Room> r1 = world.map.getRoom(room1);
-	shared_ptr<Room> r2 = world.map.getRoom(room2);
+	std::shared_ptr<Room> r1 = world.map.getRoom(room1);
+	std::shared_ptr<Room> r2 = world.map.getRoom(room2);
 	caos_assert(r1); caos_assert(r2);
 	if (r1->doors.find(r2) == r1->doors.end()) {
 		RoomDoor *door = new RoomDoor;
@@ -986,7 +986,7 @@ void caosVM::c_SETV_DOOR() {
 void caosVM::v_FLOR() {
 	valid_agent(targ);
 
-	shared_ptr<Room> r = roomContainingAgent(targ);
+	std::shared_ptr<Room> r = roomContainingAgent(targ);
 	if (!r)
 		result.setInt(0); // TODO
 	else
@@ -1034,9 +1034,9 @@ void caosVM::c_ROOM() {
 	VM_PARAM_INTEGER(left)
 	VM_PARAM_INTEGER(roomno)
 
-	shared_ptr<Room> r = world.map.getRoom(roomno);
+	std::shared_ptr<Room> r = world.map.getRoom(roomno);
 	if (!r) {
-		shared_ptr<Room> r2(new Room(left, right, top, top, bottom, bottom));
+		std::shared_ptr<Room> r2(new Room(left, right, top, top, bottom, bottom));
 		r = r2;
 
 		MetaRoom *m = world.map.getMetaRoom(0);
@@ -1079,9 +1079,9 @@ void caosVM::c_ROOM_c2() {
 	VM_PARAM_INTEGER(left)
 	VM_PARAM_INTEGER(roomno)
 	
-	shared_ptr<Room> r = world.map.getRoom(roomno);
+	std::shared_ptr<Room> r = world.map.getRoom(roomno);
 	if (!r) {
-		r = shared_ptr<Room>(new Room(left, right, top, top, bottom, bottom));
+		r = std::shared_ptr<Room>(new Room(left, right, top, top, bottom, bottom));
 		MetaRoom *m = world.map.getMetaRoom(0);
 		unsigned int roomid = m->addRoom(r);
 		r->id = roomno;
@@ -1129,7 +1129,7 @@ void caosVM::v_ROOM_c1() {
 	VM_PARAM_INTEGER(data) caos_assert(data >= 0 && data <= (engine.version == 1 ? 4 : 19));
 	VM_PARAM_INTEGER(roomno)
 
-	shared_ptr<Room> r = world.map.getRoom(roomno);
+	std::shared_ptr<Room> r = world.map.getRoom(roomno);
 	if (!r) {
 		result.setInt(0);
 		return;
@@ -1251,7 +1251,7 @@ void caosVM::c_SSFC() {
 
 	caos_assert(coordcount >= 0); // this should never happen unless the parser breaks or we load a bad savefile
 
-	shared_ptr<Room> r = world.map.getRoom(roomno);
+	std::shared_ptr<Room> r = world.map.getRoom(roomno);
 	caos_assert(r);
 
 	r->floorpoints.clear();

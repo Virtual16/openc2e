@@ -36,7 +36,7 @@ protected:
 	SDLSurface(SDLBackend *p) { parent = p; }
 
 public:
-	void render(shared_ptr<creaturesImage> image, unsigned int frame, int x, int y, bool trans = false, unsigned char transparency = 0, bool mirror = false, bool is_background = false);
+	void render(std::shared_ptr<creaturesImage> image, unsigned int frame, int x, int y, bool trans = false, unsigned char transparency = 0, bool mirror = false, bool is_background = false);
 	void renderLine(int x1, int y1, int x2, int y2, unsigned int colour);
 	void renderText(int x, int y, std::string text, unsigned int colour, unsigned int bgcolour);
 	void blitSurface(Surface *src, int x, int y, int w, int h);

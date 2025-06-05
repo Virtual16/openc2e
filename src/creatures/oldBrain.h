@@ -21,11 +21,11 @@
 #define __OLDBRAIN_H
 
 #include "genome.h"
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <set>
 #include <map>
 
-using boost::shared_ptr;
+using std::shared_ptr;
 
 struct oldSVRule {
 	unsigned int length;

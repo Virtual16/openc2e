@@ -68,7 +68,7 @@ void PointerAgent::drop(AgentRef a) {
 // TODO: this should have a queueScript equiv too
 void PointerAgent::firePointerScript(unsigned short event, Agent *src) {
 	assert(src); // TODO: I /think/ this should only be called by the engine..
-	shared_ptr<script> s = src->findScript(event);
+	std::shared_ptr<script> s = src->findScript(event);
 	if (!s && engine.version < 3) { // TODO: are we sure this doesn't apply to c2e?
 		s = findScript(event); // TODO: we should make sure this actually belongs to the pointer agent and isn't a fallback, maybe
 	}
@@ -212,7 +212,7 @@ void PointerAgent::handleEvent(SomeEvent &event) {
 			
 				bool foundport = false;
 				if (engine.version > 2) {
-					for (std::map<unsigned int, boost::shared_ptr<OutputPort> >::iterator i = parent->outports.begin();
+					for (std::map<unsigned int, std::shared_ptr<OutputPort> >::iterator i = parent->outports.begin();
 							 i != parent->outports.end(); i++) {
 						// TODO: 4 is a magic number i pulled out of nooooowhere
 						if (abs(i->second->x + parent->x - x) < 4 && abs(i->second->y + parent->y - y) < 4) {
@@ -231,7 +231,7 @@ void PointerAgent::handleEvent(SomeEvent &event) {
 						}
 					}
 					if (!foundport) {
-						for (std::map<unsigned int, boost::shared_ptr<InputPort> >::iterator i = parent->inports.begin();
+						for (std::map<unsigned int, std::shared_ptr<InputPort> >::iterator i = parent->inports.begin();
 								 i != parent->inports.end(); i++) {
 							// TODO: 4 is a magic number i pulled out of nooooowhere
 							if (abs(i->second->x + parent->x - x) < 4 && abs(i->second->y + parent->y - y) < 4) {
@@ -326,7 +326,7 @@ void PointerAgent::handleEvent(SomeEvent &event) {
 					// ensure there's a room to drop into, in C1
 					MetaRoom* m = world.map.metaRoomAt(x, y);
 					if (!m) return;
-					shared_ptr<Room> r = m->nextFloorFromPoint(x, y);
+					std::shared_ptr<Room> r = m->nextFloorFromPoint(x, y);
 					if (!r) return;
 
 					carrying->queueScript(5, this); // drop
@@ -340,7 +340,7 @@ void PointerAgent::handleEvent(SomeEvent &event) {
 					/* check dropstatus for the room we're dropping into */
 					MetaRoom* m = world.map.metaRoomAt(carrying->x, carrying->y);
 					if (m) {
-						shared_ptr<Room> r = m->roomAt(carrying->x, carrying->y);
+						std::shared_ptr<Room> r = m->roomAt(carrying->x, carrying->y);
 						if (r) {
 							if (r->dropstatus == 0) allowdrop = false; // Never
 							else if (r->dropstatus == 1) { // Above-Floor
@@ -392,7 +392,7 @@ void PointerAgent::handleEvent(SomeEvent &event) {
 				}
 			}
 		} else if (event.button == buttonmiddle) {
-			std::vector<shared_ptr<Room> > rooms = world.map.roomsAt(x, y);
+			std::vector<std::shared_ptr<Room> > rooms = world.map.roomsAt(x, y);
 			if (rooms.size() > 0) std::cout << "Room at cursor is " << rooms[0]->id << std::endl;
 			Agent *a = world.agentAt(x, y, true);
 			if (a)

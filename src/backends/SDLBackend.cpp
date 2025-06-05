@@ -351,7 +351,7 @@ SDL_Surface *MirrorSurface(SDL_Surface *surf, SDL_Color *surfpalette) {
 
 //*** end mirror code
 
-void SDLSurface::render(shared_ptr<creaturesImage> image, unsigned int frame, int x, int y, bool trans, unsigned char transparency, bool mirror, bool is_background) {
+void SDLSurface::render(std::shared_ptr<creaturesImage> image, unsigned int frame, int x, int y, bool trans, unsigned char transparency, bool mirror, bool is_background) {
 	assert(image);
 	assert(image->numframes() > frame);
 

@@ -27,7 +27,7 @@ class Camera;
 class CameraPart : public SpritePart {
 protected:
 	unsigned int viewheight, viewwidth, cameraheight, camerawidth;
-	shared_ptr<Camera> camera;
+	std::shared_ptr<Camera> camera;
 	
 public:
 	CameraPart(Agent *p, unsigned int _id, std::string spritefile, unsigned int fimg, int _x, int _y,
@@ -36,7 +36,7 @@ public:
 
 	unsigned int cameraWidth() const { return viewwidth; }
 	unsigned int cameraHeight() const { return viewheight; }
-	shared_ptr<Camera> &getCamera() { return camera; }
+	std::shared_ptr<Camera> &getCamera() { return camera; }
 	void partRender(class Surface *renderer, int xoffset, int yoffset);
 	void tick();
 };

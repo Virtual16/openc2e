@@ -21,7 +21,7 @@
 #define SOUNDBACKEND_H 1
 
 #include <boost/intrusive_ptr.hpp>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 #include <boost/enable_shared_from_this.hpp>
 
 #include <string>
@@ -69,7 +69,7 @@ namespace boost {
  * The implementation should not make any assumptions about how often any of these functions
  * will be called, if at all.
  */
-typedef boost::shared_ptr<class AudioStreamBase> AudioStream;
+typedef std::shared_ptr<class AudioStreamBase> AudioStream;
 struct AudioStreamBase {
 	virtual ~AudioStreamBase() { }
 
@@ -144,12 +144,12 @@ public:
 	virtual bool isMuted() const = 0;
 
 	/* TODO: global vol controls */
-	virtual boost::shared_ptr<AudioSource> newSource() = 0;
+	virtual std::shared_ptr<AudioSource> newSource() = 0;
 	/* Returns an AudioSource with a fixed position relative to the viewpoint.
 	 *
 	 * The effect of invoking setPos on this source is undefined.
 	 */
-	virtual boost::shared_ptr<AudioSource> getBGMSource() = 0;
+	virtual std::shared_ptr<AudioSource> getBGMSource() = 0;
 	virtual AudioClip loadClip(const std::string &filename) = 0;
 
 	virtual void begin() { }

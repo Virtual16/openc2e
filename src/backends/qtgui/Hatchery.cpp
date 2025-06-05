@@ -48,7 +48,7 @@
  * of the top-left pixel transparent. If makealpha is set, also apply
  * alpha transparency to the rest of the image.
  */
-QImage imageFromSpriteFrame(shared_ptr<creaturesImage> img, unsigned int frame, bool makealpha = false) {
+QImage imageFromSpriteFrame(std::shared_ptr<creaturesImage> img, unsigned int frame, bool makealpha = false) {
 	assert(img->format() == if_16bit);
 
 	// img->data is not 32-bit-aligned so we have to make a copy here.
@@ -164,7 +164,7 @@ public:
 // TODO: these are from imageManager.cpp, it'd be nice to have a non-hacky interface,
 // but we probably need to fix the image object model first due to endianism issues
 enum filetype { blk, s16, c16, spr, bmp };
-bool tryOpen(mmapifstream *in, shared_ptr<creaturesImage> &img, std::string fname, filetype ft);
+bool tryOpen(mmapifstream *in, std::shared_ptr<creaturesImage> &img, std::string fname, filetype ft);
 
 Hatchery::Hatchery(QtOpenc2e *parent) : QDialog(parent) {
 	qtopenc2e = parent;

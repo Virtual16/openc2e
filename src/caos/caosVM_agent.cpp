@@ -86,8 +86,8 @@ void caosVM::c_RTAR() {
 	setTarg(0);
 
 	/* XXX: maybe use a map of classifier -> agents? */
-	std::vector<boost::shared_ptr<Agent> > temp;
-	for (std::list<boost::shared_ptr<Agent> >::iterator i
+	std::vector<std::shared_ptr<Agent> > temp;
+	for (std::list<std::shared_ptr<Agent> >::iterator i
 		= world.agents.begin(); i != world.agents.end(); i++) {
 		
 		Agent *a = i->get();
@@ -123,8 +123,8 @@ void caosVM::c_TTAR() {
 	setTarg(0);
 
 	/* XXX: maybe use a map of classifier -> agents? */
-	std::vector<boost::shared_ptr<Agent> > temp;
-	for (std::list<boost::shared_ptr<Agent> >::iterator i
+	std::vector<std::shared_ptr<Agent> > temp;
+	for (std::list<std::shared_ptr<Agent> >::iterator i
 		= world.agents.begin(); i != world.agents.end(); i++) {
 		
 		Agent *a = i->get();
@@ -163,7 +163,7 @@ void caosVM::c_STAR() {
 	if (owner) seeing = owner; else seeing = targ;
 	valid_agent(seeing);
 
-	std::vector<boost::shared_ptr<Agent> > agents = getVisibleList(seeing, family, genus, species);
+	std::vector<std::shared_ptr<Agent> > agents = getVisibleList(seeing, family, genus, species);
 	if (agents.size() == 0) {
 		setTarg(0);
 	} else {
@@ -900,7 +900,7 @@ void caosVM::v_TOTL() {
 	VM_PARAM_INTEGER(family) caos_assert(family >= 0); caos_assert(family <= 255);
 
 	unsigned int x = 0;
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
 		if (!*i) continue;
 		if ((*i)->family == family || family == 0)
 			if ((*i)->genus == genus || genus == 0)
@@ -1599,7 +1599,7 @@ AgentRef findNextAgent(AgentRef previous, unsigned char family, unsigned char ge
 	AgentRef firstagent;
 	bool foundagent = false;
 
-	std::list<boost::shared_ptr<Agent> >::iterator i;
+	std::list<std::shared_ptr<Agent> >::iterator i;
 	if (forward)
 		i = world.agents.begin();
 	else {
@@ -1830,7 +1830,7 @@ void caosVM::v_LIML() {
 		Vehicle *v = dynamic_cast<Vehicle *>(targ->invehicle.get()); assert(v);
 		result.setInt((int)v->x + v->cabinleft);
 	} else {
-		shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
+		std::shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
 
 		if (r) result.setInt(r->x_left);
 		else result.setInt(0);
@@ -1850,7 +1850,7 @@ void caosVM::v_LIMT() {
 		Vehicle *v = dynamic_cast<Vehicle *>(targ->invehicle.get()); assert(v);
 		result.setInt((int)v->y + v->cabintop);
 	} else {
-		shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
+		std::shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
 
 		if (r) result.setInt(r->y_left_ceiling);
 		else result.setInt(0);
@@ -1870,7 +1870,7 @@ void caosVM::v_LIMR() {
 		Vehicle *v = dynamic_cast<Vehicle *>(targ->invehicle.get()); assert(v);
 		result.setInt((int)v->x + v->cabinright);
 	} else {
-		shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
+		std::shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
 
 		if (r) result.setInt(r->x_right);
 		else result.setInt(8352); // TODO
@@ -1891,7 +1891,7 @@ void caosVM::v_LIMB_c1() {
 		Vehicle *v = dynamic_cast<Vehicle *>(targ->invehicle.get()); assert(v);
 		result.setInt((int)v->y + v->cabinbottom);
 	} else {
-		shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
+		std::shared_ptr<Room> r = world.map.roomAt(targ->x + (targ->getWidth() / 2.0f), targ->y + (targ->getHeight() / 2.0f));
 
 		if (r) result.setInt(r->y_left_floor);
 		else result.setInt(1200); // TODO
@@ -2039,7 +2039,7 @@ void caosVM::c_BLCK() {
 
 	SpritePart *p = getCurrentSpritePart();
 	caos_assert(p);
-	shared_ptr<creaturesImage> i = p->getSprite();
+	std::shared_ptr<creaturesImage> i = p->getSprite();
 	bmpImage *img = dynamic_cast<bmpImage *>(i.get());
 	caos_assert(img);
 

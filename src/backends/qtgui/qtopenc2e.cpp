@@ -72,7 +72,7 @@ QIcon iconFromImageList(QPixmap l, unsigned int n) {
 }
 
 // Constructor which creates the main window.
-QtOpenc2e::QtOpenc2e(boost::shared_ptr<QtBackend> backend) {
+QtOpenc2e::QtOpenc2e(std::shared_ptr<QtBackend> backend) {
 	viewport = new openc2eView(this, backend);
 	setCentralWidget(viewport);
 
@@ -436,7 +436,7 @@ QtOpenc2e::~QtOpenc2e() {
 }
 
 monikerData &monikerDataFor(AgentRef a) {
-	shared_ptr<class genomeFile> g = a->getSlot(0);
+	std::shared_ptr<class genomeFile> g = a->getSlot(0);
 	assert(g);
 	std::string moniker = world.history.findMoniker(g);
 	return world.history.getMoniker(moniker);
@@ -453,8 +453,8 @@ void QtOpenc2e::selectCreature() {
 
 	Agent *a = (Agent *)srcaction->data().value<void *>();
 
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
-		boost::shared_ptr<Agent> p = *i;
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+		std::shared_ptr<Agent> p = *i;
 		if (!p) continue; // grr, but needed
 
 		if (a == p.get()) {
@@ -469,8 +469,8 @@ void QtOpenc2e::selectCreature() {
 void QtOpenc2e::updateCreaturesMenu() {
 	creaturesMenu->clear();
 
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
-		boost::shared_ptr<Agent> p = *i;
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+		std::shared_ptr<Agent> p = *i;
 		if (!p) continue; // grr, but needed
 
 		CreatureAgent *a = dynamic_cast<CreatureAgent *>(p.get());
@@ -563,7 +563,7 @@ void QtOpenc2e::tick() {
 			}
 			yeartext->setText(boost::str(boost::format("Year: %03i") % (int)world.year).c_str());
 		
-			shared_ptr<Room> room_for_tempcheck;
+			std::shared_ptr<Room> room_for_tempcheck;
 			if (world.selectedcreature) { // prefer the room the selected creature is in
 				room_for_tempcheck = roomContainingAgent(world.selectedcreature);
 			}
@@ -674,8 +674,8 @@ void QtOpenc2e::updateAppletStatus() {
 
 		// update 'next creature' button depending on whether there's any creatures we can select
 		bool are_there_creatures_present = false;
-		for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
-			boost::shared_ptr<Agent> p = *i;
+		for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+			std::shared_ptr<Agent> p = *i;
 			if (!p) continue; // grr, but needed
 
 			CreatureAgent *a = dynamic_cast<CreatureAgent *>(p.get());
@@ -780,7 +780,7 @@ void QtOpenc2e::newNorn() {
 	if (engine.version > 2) return; // TODO: fixme
 
 	std::string genomefile = "test";
-	shared_ptr<genomeFile> genome;
+	std::shared_ptr<genomeFile> genome;
 	try {
 		genome = world.loadGenome(genomefile);
 	} catch (creaturesException &e) {

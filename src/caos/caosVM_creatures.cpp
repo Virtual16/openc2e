@@ -615,9 +615,9 @@ void caosVM::c_URGE_SIGN() {
 	stim.verb_id = verb_id;
 	stim.verb_amount = verb_stim;
 
-	std::vector<boost::shared_ptr<Agent> > agents = getVisibleList(owner, 0, 0, 0);
-	for (std::vector<boost::shared_ptr<Agent> >::iterator i = agents.begin(); i != agents.end(); i++) {
-		boost::shared_ptr<Agent> a = *i; // guaranteed to be valid from getVisibleList
+	std::vector<std::shared_ptr<Agent> > agents = getVisibleList(owner, 0, 0, 0);
+	for (std::vector<std::shared_ptr<Agent> >::iterator i = agents.begin(); i != agents.end(); i++) {
+		std::shared_ptr<Agent> a = *i; // guaranteed to be valid from getVisibleList
 
 		CreatureAgent *ca = dynamic_cast<CreatureAgent *>(a.get());
 		if (!ca) continue;
@@ -1096,7 +1096,7 @@ void caosVM::c_NEWC() {
 
 	// TODO: creation should be blocking and multiple-tick!
 
-	std::map<unsigned int, shared_ptr<class genomeFile> >::iterator i = gene_agent->genome_slots.find(gene_slot);
+	std::map<unsigned int, std::shared_ptr<class genomeFile> >::iterator i = gene_agent->genome_slots.find(gene_slot);
 	caos_assert(i != gene_agent->genome_slots.end());
 
 	// randomise sex if necessary
@@ -1153,7 +1153,7 @@ void caosVM::c_NEW_CREA_c1() {
 	caos_assert(moniker != 0);
 
 	std::string realmoniker = std::string((char *)&moniker, 4);
-	shared_ptr<genomeFile> genome = world.loadGenome(realmoniker);
+	std::shared_ptr<genomeFile> genome = world.loadGenome(realmoniker);
 	if (!genome)
 		throw creaturesException("failed to find genome file '" + realmoniker + "'");
 
@@ -1202,7 +1202,7 @@ void caosVM::c_NEW_CRAG() {
 	VM_PARAM_VALIDAGENT(gene_agent)
 	VM_PARAM_INTEGER(family)
 
-       	std::map<unsigned int, shared_ptr<class genomeFile> >::iterator i = gene_agent->genome_slots.find(gene_slot);
+       	std::map<unsigned int, std::shared_ptr<class genomeFile> >::iterator i = gene_agent->genome_slots.find(gene_slot);
 	caos_assert(i != gene_agent->genome_slots.end());
 
 	// randomise sex if necessary
@@ -1411,7 +1411,7 @@ void caosVM::v_ORGF() {
 		return;
 	}
 	
-	shared_ptr<c2eOrgan> o = c->getOrgan(organ);
+	std::shared_ptr<c2eOrgan> o = c->getOrgan(organ);
 
 	switch (value) {
 		case 0: result.setFloat(o->getClockRate()); break;
@@ -1447,7 +1447,7 @@ void caosVM::v_ORGI() {
 		return;
 	}
 	
-	shared_ptr<c2eOrgan> o = c->getOrgan(organ);
+	std::shared_ptr<c2eOrgan> o = c->getOrgan(organ);
 
 	switch (value) {
 		case 0: result.setInt(o->getReceptorCount()); break;

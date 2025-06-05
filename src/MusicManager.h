@@ -22,23 +22,23 @@
 
 #include "music/mngfile.h"
 #include "endianlove.h"
-#include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
+#include <memory>
+using std::shared_ptr;
 #include <boost/enable_shared_from_this.hpp>
 
 class MusicManager {
 private:
 	std::map<std::string, MNGFile *> files;
 
-	shared_ptr<class MusicTrack> currenttrack, nexttrack;
+	std::shared_ptr<class MusicTrack> currenttrack, nexttrack;
 	bool playing_silence;
 	unsigned int current_latency;
 
-	shared_ptr<class MusicStream> stream;
+	std::shared_ptr<class MusicStream> stream;
 
 	void startPlayback();
 
-	void playTrack(shared_ptr<class MusicTrack> track);
+	void playTrack(std::shared_ptr<class MusicTrack> track);
 
 public:
 	MusicManager();
@@ -93,7 +93,7 @@ public:
 class MusicEffect {
 protected:
 	MNGEffectDecNode *node;
-	std::vector<shared_ptr<MusicStage> > stages;
+	std::vector<std::shared_ptr<MusicStage> > stages;
 
 public:
 	MusicEffect(MNGEffectDecNode *n);
@@ -105,8 +105,8 @@ protected:
 	MNGVoiceNode *node;
 	MNGUpdateNode *updatenode;
 	class MusicLayer *parent;
-	shared_ptr<MusicWave> wave;
-	shared_ptr<MusicEffect> effect;
+	std::shared_ptr<MusicWave> wave;
+	std::shared_ptr<MusicEffect> effect;
 
 	std::vector<MNGConditionNode *> conditions;
 
@@ -114,11 +114,11 @@ protected:
 	float interval, volume;
 
 public:
-	MusicVoice(shared_ptr<class MusicLayer> p, MNGVoiceNode *n);
-	shared_ptr<MusicWave> getWave() { return wave; }
+	MusicVoice(std::shared_ptr<class MusicLayer> p, MNGVoiceNode *n);
+	std::shared_ptr<MusicWave> getWave() { return wave; }
 	float getInterval() { return interval; }
 	float getVolume() { return volume; }
-	shared_ptr<MusicEffect> getEffect() { return effect; }
+	std::shared_ptr<MusicEffect> getEffect() { return effect; }
 	bool shouldPlay();
 	void runUpdateBlock();
 	MusicLayer *getParent() { return parent; }
@@ -134,7 +134,7 @@ protected:
 	std::map<std::string, float> variables;
 	float updaterate, volume, interval, beatsynch, pan;
 
-	MusicLayer(shared_ptr<MusicTrack> p);
+	MusicLayer(std::shared_ptr<MusicTrack> p);
 	void runUpdateBlock();
 
 public:
@@ -150,11 +150,11 @@ class MusicAleotoricLayer : public MusicLayer {
 protected:
 	MNGAleotoricLayerNode *node;
 
-	shared_ptr<MusicEffect> effect;
-	std::vector<shared_ptr<MusicVoice> > voices;
+	std::shared_ptr<MusicEffect> effect;
+	std::vector<std::shared_ptr<MusicVoice> > voices;
 
 public:
-	MusicAleotoricLayer(MNGAleotoricLayerNode *n, shared_ptr<MusicTrack> p);
+	MusicAleotoricLayer(MNGAleotoricLayerNode *n, std::shared_ptr<MusicTrack> p);
 	void init();
 	void update(unsigned int latency);
 };
@@ -164,10 +164,10 @@ protected:
 	MNGLoopLayerNode *node;
 
 	unsigned int update_period;
-	shared_ptr<MusicWave> wave;
+	std::shared_ptr<MusicWave> wave;
 
 public:
-	MusicLoopLayer(MNGLoopLayerNode *n, shared_ptr<MusicTrack> p);
+	MusicLoopLayer(MNGLoopLayerNode *n, std::shared_ptr<MusicTrack> p);
 	void init();
 	void update(unsigned int latency);
 };
@@ -177,7 +177,7 @@ protected:
 	MNGTrackDecNode *node;
 	MNGFile *parent;
 
-	std::vector<shared_ptr<MusicLayer> > layers;
+	std::vector<std::shared_ptr<MusicLayer> > layers;
 
 	float fadein, fadeout, beatlength, volume;
 
