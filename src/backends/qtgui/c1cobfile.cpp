@@ -24,10 +24,9 @@ std::string readpascalstring(std::istream &s) {
 	else
 		size = a;
 
-	boost::scoped_array<char> x(new char[size]);
-	//char x[size];
-	s.read(x.get(), size);
-	return std::string(x.get(), size);
+       std::unique_ptr<char[]> x(new char[size]);
+       s.read(x.get(), size);
+       return std::string(x.get(), size);
 }
 
 c1cobfile::c1cobfile(std::ifstream &s) {
