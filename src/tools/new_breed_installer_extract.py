@@ -1,17 +1,17 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 import zlib
 import struct
 import sys
 
 if len(sys.argv) != 2:
-	print "Usage: new_breed_installer_extract.py file.exe"
+	print("Usage: new_breed_installer_extract.py file.exe")
 	sys.exit(1)
 
 inp = open(sys.argv[1])
 cdata = inp.read()
 if cdata[-4:] !=  "dbrf":
-	print "This is not a file created using Kinnison's New Breed Installer, or else it is corrupt."
+	print("This is not a file created using Kinnison's New Breed Installer, or else it is corrupt.")
 	sys.exit(1)
 
 datapos = struct.unpack("<I", cdata[-8:-4])[0]
@@ -28,11 +28,11 @@ def readstr():
 	return s
 
 title = readstr()
-print "Title: " + title
+print("Title: " + title)
 author = readstr()
-print "Author: " + author
+print("Author: " + author)
 desc = readstr()
-print "Description/Notes: " + desc
+print("Description/Notes: " + desc)
 
 nofiles = struct.unpack("<I", data[currpos:currpos+4])[0]
 currpos = currpos + 4

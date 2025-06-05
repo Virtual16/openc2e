@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 
 # this implements the algorithm for using a .vce file to convert a piece of
 # text into creature sound via splitting into syllables and using a lookup
@@ -57,7 +57,7 @@ class VoiceProcessor:
 			return 32
 
 		ourlist = [] # empty array
-		for i in xrange(32): # for each of 32 bits
+		for i in range(32): # for each of 32 bits
 			if data & 1 == 1:
 				ourlist.append(i)
 			data = data >> 1
@@ -107,7 +107,7 @@ class VoiceProcessor:
 			return self.getsyllable()
 
 if len(sys.argv) != 3:
-	print "syntax: translate_voice.py /path/to/file.vce speech"
+	print("syntax: translate_voice.py /path/to/file.vce speech")
 	sys.exit(1)
 
 filename = sys.argv[1]
@@ -115,11 +115,11 @@ speech = sys.argv[2]
 
 f = open(filename, "r")
 
-for i in xrange(32):
+for i in range(32):
 	VoiceFiles.append([readstring(f), read32(f)])
 
-for i in xrange(3):
-	for j in xrange(27):
+for i in range(3):
+	for j in range(27):
 		VoiceLookup.append(read32(f))
 
 # just some silliness for testing, no idea if the sleep is the right idea..
@@ -127,7 +127,7 @@ processor = VoiceProcessor(speech)
 while True:
 	x = processor.getsyllable()
 	if not x: break
-	print "'" + x[0] + "' (" + str(x[1]) + ")",
+	print("'" + x[0] + "' (" + str(x[1]) + ")", end=' ')
 	os.popen2("mplayer -ao alsa ~/creatures2/Sounds/" + x[0].lower() + ".wav > /dev/null 2> /dev/null")
 	time.sleep(x[1] / 10.0)
 
