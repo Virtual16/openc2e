@@ -26,7 +26,7 @@
 #include "c2eBrain.h"
 #include "oldBrain.h"
 
-Creature::Creature(shared_ptr<genomeFile> g, bool is_female, unsigned char _variant, CreatureAgent *a) {
+Creature::Creature(std::shared_ptr<genomeFile> g, bool is_female, unsigned char _variant, CreatureAgent *a) {
 	assert(g);
 	genome = g;
 
@@ -93,7 +93,7 @@ void oldCreature::processGenes() {
 void c2Creature::processGenes() {
 	oldCreature::processGenes();
 
-	for (std::vector<shared_ptr<c2Organ> >::iterator x = organs.begin(); x != organs.end(); x++) {
+	for (std::vector<std::shared_ptr<c2Organ> >::iterator x = organs.begin(); x != organs.end(); x++) {
 		(*x)->processGenes();
 	}
 }
@@ -104,7 +104,7 @@ void c2eCreature::processGenes() {
 
 	brain->processGenes();
 	Creature::processGenes();
-	for (std::vector<shared_ptr<c2eOrgan> >::iterator x = organs.begin(); x != organs.end(); x++) {
+	for (std::vector<std::shared_ptr<c2eOrgan> >::iterator x = organs.begin(); x != organs.end(); x++) {
 		(*x)->processGenes();
 	}
 }
@@ -197,7 +197,7 @@ void Creature::tick() {
 /*
  * oldCreature contains the shared elements of C1 of C2 (creatures are mostly identical in both games)
  */
-oldCreature::oldCreature(shared_ptr<genomeFile> g, bool is_female, unsigned char _variant, CreatureAgent *a) : Creature(g, is_female, _variant, a) {
+oldCreature::oldCreature(std::shared_ptr<genomeFile> g, bool is_female, unsigned char _variant, CreatureAgent *a) : Creature(g, is_female, _variant, a) {
 	biochemticks = 0;
 	halflives = 0;
 	
@@ -215,7 +215,7 @@ oldCreature::oldCreature(shared_ptr<genomeFile> g, bool is_female, unsigned char
 	brain = 0; // just in case
 }
 
-c1Creature::c1Creature(shared_ptr<genomeFile> g, bool is_female, unsigned char _variant, CreatureAgent *a) : oldCreature(g, is_female, _variant, a) {
+c1Creature::c1Creature(std::shared_ptr<genomeFile> g, bool is_female, unsigned char _variant, CreatureAgent *a) : oldCreature(g, is_female, _variant, a) {
 	assert(g->getVersion() == 1);
 
 	for (unsigned int i = 0; i < 6; i++) senses[i] = 0;
@@ -229,7 +229,7 @@ c1Creature::c1Creature(shared_ptr<genomeFile> g, bool is_female, unsigned char _
 	brain->init();
 }
 
-c2Creature::c2Creature(shared_ptr<genomeFile> g, bool is_female, unsigned char _variant, CreatureAgent *a) : oldCreature(g, is_female, _variant, a) {
+c2Creature::c2Creature(std::shared_ptr<genomeFile> g, bool is_female, unsigned char _variant, CreatureAgent *a) : oldCreature(g, is_female, _variant, a) {
 	assert(g->getVersion() == 2);
 
 	for (unsigned int i = 0; i < 14; i++) senses[i] = 0;
@@ -245,7 +245,7 @@ c2Creature::c2Creature(shared_ptr<genomeFile> g, bool is_female, unsigned char _
 	brain->init();	
 }
 
-c2eCreature::c2eCreature(shared_ptr<genomeFile> g, bool is_female, unsigned char _variant, CreatureAgent *a) : Creature(g, is_female, _variant, a) {
+c2eCreature::c2eCreature(std::shared_ptr<genomeFile> g, bool is_female, unsigned char _variant, CreatureAgent *a) : Creature(g, is_female, _variant, a) {
 	assert(g->getVersion() == 3);
 
 	for (unsigned int i = 0; i < 256; i++) chemicals[i] = 0.0f;
@@ -415,7 +415,7 @@ void c1Creature::addGene(gene *g) {
 	oldCreature::addGene(g);
 
 	if (typeid(*g) == typeid(bioReactionGene)) {
-		reactions.push_back(shared_ptr<c1Reaction>(new c1Reaction()));
+		reactions.push_back(std::shared_ptr<c1Reaction>(new c1Reaction()));
 		reactions.back()->init((bioReactionGene *)(g));
 	} else if (typeid(*g) == typeid(bioEmitterGene)) {
 		emitters.push_back(c1Emitter());
@@ -434,7 +434,7 @@ void c2Creature::addGene(gene *g) {
 		organGene *o = dynamic_cast<organGene *>(g);
 		assert(o);
 		if (!o->isBrain()) { // TODO: handle brain organ
-			organs.push_back(shared_ptr<c2Organ>(new c2Organ(this, o)));
+			organs.push_back(std::shared_ptr<c2Organ>(new c2Organ(this, o)));
 		}
 	}
 }
@@ -451,7 +451,7 @@ void c2eCreature::addGene(gene *g) {
 		organGene *o = dynamic_cast<organGene *>(g);
 		assert(o);
 		if (!o->isBrain()) { // TODO: handle brain organ
-			organs.push_back(shared_ptr<c2eOrgan>(new c2eOrgan(this, o)));
+			organs.push_back(std::shared_ptr<c2eOrgan>(new c2eOrgan(this, o)));
 		}
 	} else if (typeid(*g) == typeid(bioHalfLivesGene)) {
 		bioHalfLivesGene *d = dynamic_cast<bioHalfLivesGene *>(g);

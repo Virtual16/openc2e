@@ -113,7 +113,7 @@ void Agent::finishInit() {
 	
 	// shared_from_this() can only be used if these is at least one extant
 	// shared_ptr which owns this
-	world.agents.push_front(boost::shared_ptr<Agent>(this));
+	world.agents.push_front(std::shared_ptr<Agent>(this));
 	agents_iter = world.agents.begin();
 
 	if (engine.version > 2 && findScript(10))
@@ -214,7 +214,7 @@ void Agent::delFloated(AgentRef a) {
 	floated.erase(i);
 }
 
-shared_ptr<script> Agent::findScript(unsigned short event) {
+std::shared_ptr<script> Agent::findScript(unsigned short event) {
 	return world.scriptorium.getScript(family, genus, species, event);
 }
 
@@ -291,7 +291,7 @@ bool Agent::fireScript(unsigned short event, Agent *from, caosVar one, caosVar t
 
 	bool ranscript = false;
 
-	shared_ptr<script> s = findScript(event);
+	std::shared_ptr<script> s = findScript(event);
 	if (s) {
 		bool madevm = false;
 		if (!vm) { madevm = true; vm = world.getVM(this); }
@@ -327,7 +327,7 @@ bool Agent::fireScript(unsigned short event, Agent *from, caosVar one, caosVar t
 			// drop script starts (see for instance C1 carrots, which change pose)
 			MetaRoom* m = world.map.metaRoomAt(x, y);
 			if (!m) break;
-			shared_ptr<Room> r = m->nextFloorFromPoint(x, y);
+			std::shared_ptr<Room> r = m->nextFloorFromPoint(x, y);
 			if (!r) break;
 			moveTo(x, r->bot.pointAtX(x).y - getHeight());
 			
@@ -414,7 +414,7 @@ static bool inrange_at(const MetaRoom *room, float x, float y, unsigned int widt
 	return true;
 }
 
-void Agent::updateAudio(boost::shared_ptr<AudioSource> s) {
+void Agent::updateAudio(std::shared_ptr<AudioSource> s) {
 	assert(s);
 	MetaRoom *room = world.map.metaRoomAt(x, y);
 	if (!room) {
@@ -528,7 +528,7 @@ bool Agent::validInRoomSystem(Point p, float w, float h, int testperm) {
 
 			float srcx = src.x, srcy = src.y;
 
-			shared_ptr<Room> ourRoom = m->roomAt(srcx, srcy);
+			std::shared_ptr<Room> ourRoom = m->roomAt(srcx, srcy);
 			if (!ourRoom) return false;
 
 			unsigned int dir; Line wall;
@@ -610,7 +610,7 @@ void Agent::physicsTick() {
 			// store values
 			float srcx = src.x, srcy = src.y;
 			
-			shared_ptr<Room> ourRoom = world.map.roomAt(srcx, srcy);
+			std::shared_ptr<Room> ourRoom = world.map.roomAt(srcx, srcy);
 			if (!ourRoom) {
 				ourRoom = world.map.roomAt(srcx, srcy);
 			}
@@ -747,12 +747,12 @@ void Agent::physicsTick() {
 	}
 }
 
-shared_ptr<Room> const Agent::bestRoomAt(unsigned int tryx, unsigned int tryy, unsigned int direction, MetaRoom *m, shared_ptr<Room> exclude) {
-	std::vector<shared_ptr<Room> > rooms = m->roomsAt(tryx, tryy);
+std::shared_ptr<Room> const Agent::bestRoomAt(unsigned int tryx, unsigned int tryy, unsigned int direction, MetaRoom *m, std::shared_ptr<Room> exclude) {
+	std::vector<std::shared_ptr<Room> > rooms = m->roomsAt(tryx, tryy);
 
-	shared_ptr<Room> r;
+	std::shared_ptr<Room> r;
 
-	if (rooms.size() == 0) return shared_ptr<Room>();
+	if (rooms.size() == 0) return std::shared_ptr<Room>();
 	if (rooms.size() == 1) r = rooms[0];
 	else if (rooms.size() > 1) {
 		unsigned int j;
@@ -773,7 +773,7 @@ shared_ptr<Room> const Agent::bestRoomAt(unsigned int tryx, unsigned int tryy, u
 		r = rooms[j];
 	}
 
-	if (r == exclude) return shared_ptr<Room>();
+	if (r == exclude) return std::shared_ptr<Room>();
 	else return r;
 }
 
@@ -788,9 +788,9 @@ void Agent::findCollisionInDirection(unsigned int i, class MetaRoom *m, Point sr
 	}
 
 	// TODO: caching rooms affects behaviour - work out if that's a problem
-	shared_ptr<Room> room = roomcache[i].lock();
+	std::shared_ptr<Room> room = roomcache[i].lock();
 	if (!room || !room->containsPoint(src.x, src.y)) {
-		room = bestRoomAt(src.x, src.y, i, m, shared_ptr<Room>());
+		room = bestRoomAt(src.x, src.y, i, m, std::shared_ptr<Room>());
 		roomcache[i] = room;
 	}
 
@@ -876,7 +876,7 @@ void Agent::findCollisionInDirection(unsigned int i, class MetaRoom *m, Point sr
 				else if (dx < 0 && src.x + p.x <= m->x()) src.x += m->width();
 			}
 
-			shared_ptr<Room> newroom = bestRoomAt(src.x + p.x, src.y + p.y, i, m, room);
+			std::shared_ptr<Room> newroom = bestRoomAt(src.x + p.x, src.y + p.y, i, m, room);
 
 			bool collision = false;
 
@@ -1022,7 +1022,7 @@ void Agent::tick() {
 	// CA updates
 	if (emitca_index != -1 && emitca_amount != 0.0f) {
 		assert(0 <= emitca_index && emitca_index <= 19);
-		shared_ptr<Room> r = world.map.roomAt(x, y);
+		std::shared_ptr<Room> r = world.map.roomAt(x, y);
 		if (r) {
 			r->catemp[emitca_index] += emitca_amount;
 			/*if (r->catemp[emitca_index] <= 0.0f) r->catemp[emitca_index] = 0.0f;
@@ -1300,8 +1300,8 @@ bool Agent::beDropped() {
 
 	if (!wasinvehicle) { // ie, we're not being dropped by a vehicle
 		// TODO: check for vehicles in a saner manner?
-		for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
-			boost::shared_ptr<Agent> a = (*i);
+		for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+			std::shared_ptr<Agent> a = (*i);
 			if (!a) continue;
 			Vehicle *v = dynamic_cast<Vehicle *>(a.get());
 			if (!v) continue;
@@ -1462,9 +1462,9 @@ void Agent::setVoice(std::string name) {
 		if (!path.size()) throw creaturesException(boost::str(boost::format("can't find %s.vce") % name));
 		std::ifstream f(path.c_str());
 		if (!f.is_open()) throw creaturesException(boost::str(boost::format("can't open %s.vce") % name));
-		voice = shared_ptr<VoiceData>(new VoiceData(f));
+		voice = std::shared_ptr<VoiceData>(new VoiceData(f));
 	} else {
-		voice = shared_ptr<VoiceData>(new VoiceData(name));
+		voice = std::shared_ptr<VoiceData>(new VoiceData(name));
 	}
 }
 

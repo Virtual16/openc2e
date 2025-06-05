@@ -164,7 +164,7 @@ void caosVM::v_OBST() {
 			dest.y += targ->range.getFloat(); break;
 	}
 
-	shared_ptr<Room> ourRoom = world.map.roomAt(src.x, src.y);
+	std::shared_ptr<Room> ourRoom = world.map.roomAt(src.x, src.y);
 	if (!ourRoom) {
 		// TODO: is this correct behaviour?
 		result.setFloat(0.0f);

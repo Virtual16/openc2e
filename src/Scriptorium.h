@@ -22,8 +22,8 @@
 #define _SCRIPTORIUM_H
 
 #include "openc2e.h"
-#include <boost/shared_ptr.hpp>
-using boost::shared_ptr;
+#include <memory>
+using std::shared_ptr;
 #include <map>
 
 class script;
@@ -33,15 +33,15 @@ protected:
 	FRIEND_SERIALIZE(Scriptorium)
 	// unsigned int = combined family/genus/species
 	// unsigned short = event id
-	std::map<unsigned int, std::map<unsigned short, shared_ptr<script> > > scripts;
+	std::map<unsigned int, std::map<unsigned short, std::shared_ptr<script> > > scripts;
 	
-	std::map<unsigned short, shared_ptr<script> > &getScripts(unsigned int value) { return scripts[value]; }
+	std::map<unsigned short, std::shared_ptr<script> > &getScripts(unsigned int value) { return scripts[value]; }
 	unsigned int calculateValue(unsigned char family, unsigned char genus, unsigned short species);
 
 public:
-	void addScript(unsigned char family, unsigned char genus, unsigned short species, unsigned short event, shared_ptr<script> s);
+	void addScript(unsigned char family, unsigned char genus, unsigned short species, unsigned short event, std::shared_ptr<script> s);
 	void delScript(unsigned char family, unsigned char genus, unsigned short species, unsigned short event);
-	shared_ptr<script> getScript(unsigned char family, unsigned char genus, unsigned short species, unsigned short event);
+	std::shared_ptr<script> getScript(unsigned char family, unsigned char genus, unsigned short species, unsigned short event);
 };
 
 #endif

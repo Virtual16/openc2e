@@ -72,29 +72,29 @@ Engine::Engine() {
 	palette = 0;
 	exefile = 0;
 
-	addPossibleBackend("null", shared_ptr<Backend>(new NullBackend()));
-	addPossibleAudioBackend("null", shared_ptr<AudioBackend>(new NullAudioBackend()));
+	addPossibleBackend("null", std::shared_ptr<Backend>(new NullBackend()));
+	addPossibleAudioBackend("null", std::shared_ptr<AudioBackend>(new NullAudioBackend()));
 }
 
 Engine::~Engine() {
 	if (palette) delete[] palette;
 }
 
-void Engine::addPossibleBackend(std::string s, boost::shared_ptr<Backend> b) {
+void Engine::addPossibleBackend(std::string s, std::shared_ptr<Backend> b) {
 	assert(!backend);
 	assert(b);
 	preferred_backend = s;
 	possible_backends[s] = b;
 }
 
-void Engine::addPossibleAudioBackend(std::string s, boost::shared_ptr<AudioBackend> b) {
+void Engine::addPossibleAudioBackend(std::string s, std::shared_ptr<AudioBackend> b) {
 	assert(!audio);
 	assert(b);
 	preferred_audiobackend = s;
 	possible_audiobackends[s] = b;
 }
 
-void Engine::setBackend(shared_ptr<Backend> b) {
+void Engine::setBackend(std::shared_ptr<Backend> b) {
 	backend = b;
 	lasttimestamp = backend->ticks();
 }
@@ -213,7 +213,7 @@ void Engine::update() {
 	if (version == 1 && (world.tickcount % 70) == 0) {
 		int piece = 1 + (rand() % 28);
 		std::string filename = boost::str(boost::format("MU%02d") % piece);
-		boost::shared_ptr<AudioSource> s = world.playAudio(filename, AgentRef(), false, false, true);
+		std::shared_ptr<AudioSource> s = world.playAudio(filename, AgentRef(), false, false, true);
 		if (s) s->setVolume(0.4f);
 	}
 
@@ -359,7 +359,7 @@ void Engine::processEvents() {
 
 void Engine::handleResizedWindow(SomeEvent &event) {
 	// notify agents
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
 		if (!*i) continue;
 		(*i)->queueScript(123, 0); // window resized script
 	}
@@ -370,7 +370,7 @@ void Engine::handleMouseMove(SomeEvent &event) {
 	world.hand()->handleEvent(event);
 
 	// notify agents
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
 		if (!*i) continue;
 		if ((*i)->imsk_mouse_move) {
 			caosVar x; x.setFloat(world.hand()->pointerX());
@@ -382,7 +382,7 @@ void Engine::handleMouseMove(SomeEvent &event) {
 
 void Engine::handleMouseButton(SomeEvent &event) {
 	// notify agents
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
 		if (!*i) continue;
 		if ((event.type == eventmousebuttonup && (*i)->imsk_mouse_up) ||
 			(event.type == eventmousebuttondown && (*i)->imsk_mouse_down)) {
@@ -444,7 +444,7 @@ void Engine::handleKeyDown(SomeEvent &event) {
 	// notify agents
 	caosVar k;
 	k.setInt(event.key);
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
 		if (!*i) continue;
 		if ((*i)->imsk_translated_char)
 			(*i)->queueScript(79, 0, k); // translated char script
@@ -537,7 +537,7 @@ void Engine::handleSpecialKeyDown(SomeEvent &event) {
 	// notify agents
 	caosVar k;
 	k.setInt(event.key);
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
 		if (!*i) continue;
 		if ((*i)->imsk_key_down)
 			(*i)->queueScript(73, 0, k); // key down script
@@ -561,14 +561,14 @@ bool Engine::parseCommandLine(int argc, char *argv[]) {
 
 	// generate help for backend options
 	std::string available_backends;
-	for (std::map<std::string, boost::shared_ptr<Backend> >::iterator i = possible_backends.begin(); i != possible_backends.end(); i++) {
+	for (std::map<std::string, std::shared_ptr<Backend> >::iterator i = possible_backends.begin(); i != possible_backends.end(); i++) {
 		if (available_backends.empty()) available_backends = i->first;
 		else available_backends += ", " + i->first;
 	}
 	available_backends = "Select the backend (options: " + available_backends + "), default is " + preferred_backend;
 	
 	std::string available_audiobackends;
-	for (std::map<std::string, boost::shared_ptr<AudioBackend> >::iterator i = possible_audiobackends.begin(); i != possible_audiobackends.end(); i++) {
+	for (std::map<std::string, std::shared_ptr<AudioBackend> >::iterator i = possible_audiobackends.begin(); i != possible_audiobackends.end(); i++) {
 		if (available_audiobackends.empty()) available_audiobackends = i->first;
 		else available_audiobackends += ", " + i->first;
 	}
@@ -721,20 +721,20 @@ bool Engine::initialSetup() {
 
 	if (cmdline_norun) preferred_backend = "null";
 	if (preferred_backend != "null") std::cout << "* Initialising backend " << preferred_backend << "..." << std::endl;	
-	shared_ptr<Backend> b = possible_backends[preferred_backend];
+	std::shared_ptr<Backend> b = possible_backends[preferred_backend];
 	if (!b)	throw creaturesException("No such backend " + preferred_backend);
 	b->init(); setBackend(b);
 	possible_backends.clear();
 
 	if (cmdline_norun || !cmdline_enable_sound) preferred_audiobackend = "null";
 	if (preferred_audiobackend != "null") std::cout << "* Initialising audio backend " << preferred_audiobackend << "..." << std::endl;	
-	shared_ptr<AudioBackend> a = possible_audiobackends[preferred_audiobackend];
+	std::shared_ptr<AudioBackend> a = possible_audiobackends[preferred_audiobackend];
 	if (!a)	throw creaturesException("No such audio backend " + preferred_audiobackend);
 	try{
 		a->init(); audio = a;
 	} catch (creaturesException &e) {
 		std::cerr << "* Couldn't initialize backend " << preferred_audiobackend << ": " << e.what() << std::endl << "* Continuing without sound." << std::endl;
-		audio = shared_ptr<AudioBackend>(new NullAudioBackend());
+		audio = std::shared_ptr<AudioBackend>(new NullAudioBackend());
 		audio->init();
 	}
 	possible_audiobackends.clear();

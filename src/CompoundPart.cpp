@@ -44,7 +44,7 @@ bool partzorder::operator ()(const CompoundPart *s1, const CompoundPart *s2) con
 		return s1->getParent()->getZOrder() > s2->getParent()->getZOrder();
 }
 
-shared_ptr<creaturesImage> TextEntryPart::caretsprite;
+std::shared_ptr<creaturesImage> TextEntryPart::caretsprite;
 
 void CompoundPart::render(Surface *renderer, int xoffset, int yoffset) {
 	if (parent->visible) {
@@ -183,7 +183,7 @@ SpritePart::~SpritePart() {
 #include "images/bmpImage.h"
 
 void SpritePart::changeSprite(std::string spritefile, unsigned int fimg) {
-	shared_ptr<creaturesImage> spr = world.gallery.getImage(spritefile);
+	std::shared_ptr<creaturesImage> spr = world.gallery.getImage(spritefile);
 	caos_assert(spr);
 	base = 0; // TODO: should we preserve base?
 
@@ -203,7 +203,7 @@ void SpritePart::changeSprite(std::string spritefile, unsigned int fimg) {
 	setPose(pose); // TODO: we need to preserve pose, but shouldn't we do some sanity checking?
 }
 
-void SpritePart::changeSprite(shared_ptr<creaturesImage> spr) {
+void SpritePart::changeSprite(std::shared_ptr<creaturesImage> spr) {
 	caos_assert(spr);
 	// TODO: should we preserve tint?
 	base = 0; // TODO: should we preserve base?
@@ -542,7 +542,7 @@ void TextPart::partRender(Surface *renderer, int xoffset, int yoffset, TextEntry
 		currenty = (textheight - pageheights[currpage]) / 2;
 	unsigned int startline = pages[currpage];
 	unsigned int endline = (currpage + 1 < pages.size() ? pages[currpage + 1] : lines.size());
-	shared_ptr<creaturesImage> sprite = textsprite; unsigned int currtint = 0;
+	std::shared_ptr<creaturesImage> sprite = textsprite; unsigned int currtint = 0;
 	for (unsigned int i = startline; i < endline; i++) {	
 		unsigned int currentx = 0, somex = xoff;
 		if (horz_align == rightalign)
@@ -655,7 +655,7 @@ CameraPart::CameraPart(Agent *p, unsigned int _id, std::string spritefile, unsig
 	viewheight = view_height;
 	camerawidth = camera_width;
 	cameraheight = camera_height;
-	camera = shared_ptr<Camera>(new PartCamera(this));
+	camera = std::shared_ptr<Camera>(new PartCamera(this));
 }
 
 void CameraPart::partRender(class Surface *renderer, int xoffset, int yoffset) {

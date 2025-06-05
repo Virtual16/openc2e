@@ -44,7 +44,7 @@ historyevent::historyevent(unsigned int eno, CreatureAgent *c) {
 	}
 }
 
-void monikerData::init(std::string m, shared_ptr<genomeFile> f) {
+void monikerData::init(std::string m, std::shared_ptr<genomeFile> f) {
 	moniker = m;
 	status = unreferenced;
 	warpveteran = false;
@@ -74,7 +74,7 @@ historyevent &monikerData::addEvent(unsigned int event, std::string moniker1, st
 	events.back().monikers[0] = moniker1;
 	events.back().monikers[1] = moniker2;
 
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
 		if (!*i) continue;
 
 		(*i)->queueScript(127, 0, moniker, (int)(events.size() - 1)); // new life event
@@ -147,7 +147,7 @@ monikerstatus monikerData::getStatus() {
 
 }
 
-std::string historyManager::newMoniker(shared_ptr<genomeFile> genome) {
+std::string historyManager::newMoniker(std::shared_ptr<genomeFile> genome) {
 	unsigned int genus = 0;
 	
 	for (vector<gene *>::iterator i = genome->genes.begin(); i != genome->genes.end(); i++) {
@@ -208,7 +208,7 @@ monikerData &historyManager::getMoniker(std::string s) {
 	return i->second;
 }
 
-std::string historyManager::findMoniker(shared_ptr<genomeFile> g) {
+std::string historyManager::findMoniker(std::shared_ptr<genomeFile> g) {
 	for (std::map<std::string, monikerData>::iterator i = monikers.begin(); i != monikers.end(); i++) {
 		if (i->second.genome.lock() == g) return i->first;
 	}

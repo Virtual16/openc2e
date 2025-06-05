@@ -23,7 +23,7 @@
 #include "c2eBrain.h"
 #include "oldBrain.h"
 
-using boost::shared_ptr;
+using std::shared_ptr;
 
 void oldCreature::addChemical(unsigned char id, unsigned char val) {
 	if (id == 0) return;
@@ -85,7 +85,7 @@ void c1Creature::tickBiochemistry() {
 	}
 
 	// process reactions
-	for (std::vector<shared_ptr<c1Reaction> >::iterator i = reactions.begin(); i != reactions.end(); i++) {
+	for (std::vector<std::shared_ptr<c1Reaction> >::iterator i = reactions.begin(); i != reactions.end(); i++) {
 		processReaction(**i);
 	}
 
@@ -98,7 +98,7 @@ void c2Creature::tickBiochemistry() {
 	if ((ticks % 2) != 0) return; // every 2 ticks (0.2s)
 
 	// tick organs
-	for (std::vector<shared_ptr<c2Organ> >::iterator x = organs.begin(); x != organs.end(); x++) {
+	for (std::vector<std::shared_ptr<c2Organ> >::iterator x = organs.begin(); x != organs.end(); x++) {
 		(*x)->tick();
 	}
 
@@ -131,7 +131,7 @@ void c2eCreature::tickBiochemistry() {
 	if ((ticks % 4) != 0) return;
 	
 	// tick organs
-	for (std::vector<shared_ptr<c2eOrgan> >::iterator x = organs.begin(); x != organs.end(); x++) {
+	for (std::vector<std::shared_ptr<c2eOrgan> >::iterator x = organs.begin(); x != organs.end(); x++) {
 		(*x)->tick();
 	}
 
@@ -443,7 +443,7 @@ void c2Organ::processGenes() {
 		if (!parent->shouldProcessGene(*i)) continue;
 
 		if (typeid(*(*i)) == typeid(bioReactionGene)) {
-			reactions.push_back(shared_ptr<c2Reaction>(new c2Reaction()));
+			reactions.push_back(std::shared_ptr<c2Reaction>(new c2Reaction()));
 			reactions.back()->init((bioReactionGene *)(*i));
 		} else if (typeid(*(*i)) == typeid(bioEmitterGene)) {
 			emitters.push_back(c2Emitter());
@@ -456,14 +456,14 @@ void c2Organ::processGenes() {
 }
 
 void c2eOrgan::processGenes() {
-	shared_ptr<c2eReaction> r; // we need to store the previous reaction for possible receptor use
+	std::shared_ptr<c2eReaction> r; // we need to store the previous reaction for possible receptor use
 	// TODO: should this cope with receptors created at other lifestages? i doubt it.. - fuzzie
 
 	for (vector<gene *>::iterator i = ourGene->genes.begin(); i != ourGene->genes.end(); i++) {
 		if (!parent->shouldProcessGene(*i)) continue;
 
 		if (typeid(*(*i)) == typeid(bioReactionGene)) {
-			reactions.push_back(shared_ptr<c2eReaction>(new c2eReaction()));
+			reactions.push_back(std::shared_ptr<c2eReaction>(new c2eReaction()));
 			r = reactions.back();
 			reactions.back()->init((bioReactionGene *)(*i));
 		} else if (typeid(*(*i)) == typeid(bioEmitterGene)) {
@@ -513,7 +513,7 @@ void c2Organ::tick() {
 				processEmitter(*i);
 			
 			// *** tick reactions
-			for (vector<shared_ptr<c2Reaction> >::iterator i = reactions.begin(); i != reactions.end(); i++)
+			for (vector<std::shared_ptr<c2Reaction> >::iterator i = reactions.begin(); i != reactions.end(); i++)
 				processReaction(**i);
 		} else {
 			// not enough energy!
@@ -579,7 +579,7 @@ void c2eOrgan::tick() {
 				processEmitter(*i);
 			
 			// *** tick reactions
-			for (vector<shared_ptr<c2eReaction> >::iterator i = reactions.begin(); i != reactions.end(); i++)
+			for (vector<std::shared_ptr<c2eReaction> >::iterator i = reactions.begin(); i != reactions.end(); i++)
 				processReaction(**i);
 		} else {
 			// *** out of energy damage	
@@ -602,13 +602,13 @@ void c2eOrgan::tick() {
 	}
 	
 	// *** tick receptors	
-	for (vector<shared_ptr<c2eReaction> >::iterator i = reactions.begin(); i != reactions.end(); i++) (*i)->receptors = 0;
+	for (vector<std::shared_ptr<c2eReaction> >::iterator i = reactions.begin(); i != reactions.end(); i++) (*i)->receptors = 0;
 	clockratereceptors = 0; repairratereceptors = 0; injuryreceptors = 0;
 		
 	for (vector<c2eReceptor>::iterator i = receptors.begin(); i != receptors.end(); i++)
 		processReceptor(*i, ticked);
 	
-	for (vector<shared_ptr<c2eReaction> >::iterator i = reactions.begin(); i != reactions.end(); i++) if ((*i)->receptors > 0) (*i)->rate /= (*i)->receptors;
+	for (vector<std::shared_ptr<c2eReaction> >::iterator i = reactions.begin(); i != reactions.end(); i++) if ((*i)->receptors > 0) (*i)->rate /= (*i)->receptors;
 	if (clockratereceptors > 0) clockrate /= clockratereceptors;
 	if (repairratereceptors > 0) repairrate /= repairratereceptors;
 	if (injuryreceptors > 0) injurytoapply /= injuryreceptors;
@@ -971,7 +971,7 @@ float *c2eOrgan::getLocusPointer(bool receptor, unsigned char o, unsigned char t
 			break;
 		case 3: // reaction
 			if (t == 0 && l == 0) { // reaction rate
-				shared_ptr<c2eReaction> r = reactions.back();
+				std::shared_ptr<c2eReaction> r = reactions.back();
 				if (!r) {
 					std::cout << "c2eOrgan::getLocusPointer failed to find a reaction" << std::endl;
 					return 0;
@@ -1012,7 +1012,7 @@ void c2Receptor::init(bioReceptorGene *g, c2Organ *parent) {
 	locus = parent->getLocusPointer(true, g->organ, g->tissue, g->locus, &receptors);
 }
 	
-void c2eReceptor::init(bioReceptorGene *g, c2eOrgan *parent, shared_ptr<c2eReaction> r) {
+void c2eReceptor::init(bioReceptorGene *g, c2eOrgan *parent, std::shared_ptr<c2eReaction> r) {
 	data = g;
 	processed = false;
 	nominal = g->nominal / 255.0f;

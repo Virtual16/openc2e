@@ -79,7 +79,7 @@ struct script {
 		std::vector<bytestring_t> bytestrs;
 		// a normalized copy of the script source. this is used for error tracing
 		shared_str code;
-		shared_ptr<std::vector<toktrace> > tokinfo;
+		std::shared_ptr<std::vector<toktrace> > tokinfo;
 	public:
 		int fmly, gnus, spcs, scrp;
 		const class Dialect *dialect;
@@ -185,7 +185,7 @@ class CAOSExpression;
 
 struct CAOSCmd {
 	const cmdinfo *op;
-	std::vector<boost::shared_ptr<CAOSExpression> > arguments;
+	std::vector<std::shared_ptr<CAOSExpression> > arguments;
 	int traceidx;
 	CAOSCmd() { op = 0; traceidx = -1; }
 	CAOSCmd(const CAOSCmd &c) : op(c.op), arguments(c.arguments) { }
@@ -241,9 +241,9 @@ class caosScript { //: Collectable {
 public:
 	const Dialect *d;
 	std::string filename;
-	shared_ptr<script> installer, removal;
-	std::vector<shared_ptr<script> > scripts;
-	shared_ptr<script> current;
+	std::shared_ptr<script> installer, removal;
+	std::vector<std::shared_ptr<script> > scripts;
+	std::shared_ptr<script> current;
 
 	caosScript(const std::string &dialect, const std::string &fn);
 	caosScript() { d = NULL; }
@@ -257,12 +257,12 @@ protected:
 	void emitOp(opcode_t op, int argument);
 	void emitCmd(const char *name);
 	void emitConst(const caosVar &);
-	boost::shared_ptr<CAOSExpression> readExpr(const enum ci_type xtype);
-	void emitExpr(boost::shared_ptr<CAOSExpression> ce);
+	std::shared_ptr<CAOSExpression> readExpr(const enum ci_type xtype);
+	void emitExpr(std::shared_ptr<CAOSExpression> ce);
 	const cmdinfo *readCommand(class token *t, const std::string &prefix, bool except = true);
 	void parseloop(int state, void *info);
 
-	shared_ptr<std::vector<token> > tokens;
+	std::shared_ptr<std::vector<token> > tokens;
 	int curindex; // index to the next token to be read
    	int errindex; // index to the token to report parse errors on
 	int traceindex; // index to the token to report runtime errors on

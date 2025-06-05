@@ -54,7 +54,7 @@ void fileSwapper::convertc16(std::string src, std::string dest) {
 	// okay. read the damn file.
 	c16Image img(in, src);
 
-	shared_ptr<creaturesImage> imgcopy = img.mutableCopy();
+	std::shared_ptr<creaturesImage> imgcopy = img.mutableCopy();
 	s16Image *i = dynamic_cast<s16Image *>(imgcopy.get());
 	assert(i);
 	

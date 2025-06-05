@@ -806,8 +806,8 @@ void SFCFile::copyToWorld() {
 	// patch agents
 	// TODO: do we really need to do this, and if so, should it be done here?
 	// I like this for now because it makes debugging suck a lot less - fuzzie
-	for (std::list<boost::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
-		boost::shared_ptr<Agent> a = (*i);
+	for (std::list<std::shared_ptr<Agent> >::iterator i = world.agents.begin(); i != world.agents.end(); i++) {
+		std::shared_ptr<Agent> a = (*i);
 
 		#define NUM_SFC_PATCHES 5
 
@@ -846,7 +846,7 @@ void SFCFile::copyToWorld() {
 
 void MapData::copyToWorld() {
 	// find the background sprite
-	shared_ptr<creaturesImage> spr = world.gallery.getImage(background->filename);
+	std::shared_ptr<creaturesImage> spr = world.gallery.getImage(background->filename);
 	sfccheck(spr);
 
 	// check for Terra Nornia's corrupt background sprite
@@ -870,7 +870,7 @@ void MapData::copyToWorld() {
 		CRoom *src = *i;
 
 		// create a new room, set the type
-		shared_ptr<Room> r(new Room(src->left, src->right, src->top, src->top, src->bottom, src->bottom));
+		std::shared_ptr<Room> r(new Room(src->left, src->right, src->top, src->top, src->bottom, src->bottom));
 		r->type.setInt(src->roomtype);
 
 		// add the room to the world, ensure it matches the id we retrieved
@@ -919,8 +919,8 @@ void MapData::copyToWorld() {
 		for (unsigned int j = 0; j < 4; j++) {
 			for (std::vector<CDoor *>::iterator k = src->doors[j].begin(); k < src->doors[j].end(); k++) {
 				CDoor *door = *k;
-				shared_ptr<Room> r1 = world.map.getRoom(src->id);
-				shared_ptr<Room> r2 = world.map.getRoom(door->otherroom);
+				std::shared_ptr<Room> r1 = world.map.getRoom(src->id);
+				std::shared_ptr<Room> r2 = world.map.getRoom(door->otherroom);
 		
 				if (r1->doors.find(r2) == r1->doors.end()) {
 					// create a new door between rooms!

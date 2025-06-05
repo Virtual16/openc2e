@@ -246,7 +246,7 @@ void caosVM::v_SORQ() {
 	VM_PARAM_INTEGER(genus) caos_assert(event >= 0 && event <= 255);
 	VM_PARAM_INTEGER(family) caos_assert(event >= 0 && event <= 255);
 
-	shared_ptr<script> s = world.scriptorium.getScript(family, genus, species, event);
+	std::shared_ptr<script> s = world.scriptorium.getScript(family, genus, species, event);
 	if (s) result.setInt(1);
 	else result.setInt(0);
 }

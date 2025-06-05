@@ -253,7 +253,7 @@ void caosVM::c_DBG_DISA() {
 	
 	caos_assert(outputstream);
 
-	shared_ptr<script> s = world.scriptorium.getScript(family, genus, species, event);
+	std::shared_ptr<script> s = world.scriptorium.getScript(family, genus, species, event);
 	if (s) {
 		if (s->fmly != family || s->gnus != genus || s->spcs != species) {
 			*outputstream << "warning: search resulted in script from " << s->fmly << ", " << s->gnus << ", " << s->spcs << " script" << std::endl;

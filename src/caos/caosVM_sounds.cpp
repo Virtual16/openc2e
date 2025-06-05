@@ -161,7 +161,7 @@ void caosVM::c_RMSC() {
 	VM_PARAM_INTEGER(y)
 	VM_PARAM_INTEGER(x)
 
-	shared_ptr<Room> r = world.map.roomAt(x, y);
+	std::shared_ptr<Room> r = world.map.roomAt(x, y);
 	caos_assert(r);
 
 	r->music = track_name;
@@ -178,7 +178,7 @@ void caosVM::v_RMSC() {
 	VM_PARAM_INTEGER(y)
 	VM_PARAM_INTEGER(x)
 
-	shared_ptr<Room> r = world.map.roomAt(x, y);
+	std::shared_ptr<Room> r = world.map.roomAt(x, y);
 	caos_assert(r);
 
 	result.setString(r->music);
@@ -386,7 +386,7 @@ void caosVM::c_DBG_SINE() {
 		if (targ->sound)
 			targ->sound->stop();
 	}
-	boost::shared_ptr<AudioSource> src;
+	std::shared_ptr<AudioSource> src;
 	if (track == 2)
 		src = engine.audio->getBGMSource();
 	else
@@ -408,7 +408,7 @@ void caosVM::c_DBG_SINE() {
  Don't touch.
  */
 void caosVM::c_DBG_SBGM() {
-	boost::shared_ptr<AudioSource> src = engine.audio->getBGMSource();
+	std::shared_ptr<AudioSource> src = engine.audio->getBGMSource();
 	if (src)
 		src->stop();
 }

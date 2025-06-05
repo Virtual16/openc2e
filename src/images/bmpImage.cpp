@@ -180,7 +180,7 @@ bmpData::~bmpData() {
 bmpImage::bmpImage(mmapifstream *in, std::string n) : creaturesImage(n) {
 	buffers = 0;
 
-	bmpdata = shared_ptr<bmpData>(new bmpData(in, n));
+	bmpdata = std::shared_ptr<bmpData>(new bmpData(in, n));
 	imgformat = bmpdata->imgformat;
 	setBlockSize(bmpdata->biWidth, bmpdata->biHeight);
 }
