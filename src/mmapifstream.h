@@ -23,16 +23,16 @@
 #include <string>
 #include <fstream>
 
-// todo: write destructor
+// Destructor properly closes any open file and mapping
 class mmapifstream : public std::ifstream {
 public:
-	bool live;
-	unsigned int filesize;
-	char *map;
-	mmapifstream() { live = false; }
-	mmapifstream(std::string filename);
-	~mmapifstream();
-	void mmapopen(std::string filename);
+        bool live;
+        unsigned int filesize;
+        char *map;
+        mmapifstream() { live = false; }
+        mmapifstream(std::string filename);
+        ~mmapifstream(); // cleans up resources
+        void mmapopen(std::string filename);
 };
 
 #endif
