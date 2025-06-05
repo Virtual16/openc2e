@@ -32,11 +32,9 @@
 #include <iostream>
 #include <fstream>
 
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
+#include <filesystem>
 
-using namespace boost::filesystem;
+using namespace std::filesystem;
 
 enum filetype { blk, s16, c16, spr, bmp };
 
