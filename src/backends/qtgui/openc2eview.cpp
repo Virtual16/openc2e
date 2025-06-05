@@ -20,6 +20,7 @@
 
 #include "openc2eview.h"
 #include <QtGui>
+#include <QScrollBar>
 #include "QtBackend.h"
 
 #ifdef _WIN32

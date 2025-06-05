@@ -144,8 +144,8 @@ bool Map::collideLineWithRoomBoundaries(Point src, Point dest, std::shared_ptr<R
 	}*/
 
 	float distance = 100000000.0f; // TODO: lots.
-	bool foundsomething = false;
-	bool previousroom = (newroom);
+    bool foundsomething = false;
+    bool previousroom = static_cast<bool>(newroom);
 	Point oldpoint = where;
 	Line movement(src, dest);
 

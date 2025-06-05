@@ -23,6 +23,7 @@
 #include "physics.h"
 #include "openc2e.h"
 #include <vector>
+#include <memory>
 
 class Room;
 class MetaRoom;

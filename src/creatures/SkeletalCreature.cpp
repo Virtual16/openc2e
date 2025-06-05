@@ -37,6 +37,7 @@
 #include "creaturesImage.h"
 
 #include <typeinfo> // TODO: remove when genome system is fixed
+#include <memory>
 #include <boost/format.hpp>
 
 struct bodypartinfo {
@@ -431,8 +432,8 @@ void SkeletalCreature::snapDownFoot() {
 		footy = newfooty;
 	}
 
-	bool newroomchosen = (newroom != downfootroom) && downfootroom;
-	bool hadroom = (downfootroom);
+        bool newroomchosen = (newroom != downfootroom) && downfootroom;
+        bool hadroom = static_cast<bool>(downfootroom);
 	downfootroom = newroom;
 	
 	if (!downfootroom /*|| !falling */) {
