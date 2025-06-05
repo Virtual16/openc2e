@@ -101,8 +101,10 @@ void cobBlock::free() {
 
 // TODO: argh, isn't there a better way to do this?
 std::string readstring(std::istream &file) {
-	unsigned int i = 0, n = 4096;
-	char *buf = (char *)malloc(n);
+        unsigned int i = 0, n = 4096;
+        char *buf = (char *)malloc(n);
+        if (!buf)
+                throw creaturesException("malloc failed");
 
 	while (true) {
                file.read(&buf[i], 1);
@@ -121,10 +123,15 @@ std::string readstring(std::istream &file) {
 		i++;
 
 		// out of space?
-		if (i == n) {
-			n = n * 2;
-			buf = (char *)realloc(buf, n);
-		}
+                if (i == n) {
+                        n = n * 2;
+                        char *newbuf = (char *)realloc(buf, n);
+                        if (!newbuf) {
+                                free(buf);
+                                throw creaturesException("realloc failed");
+                        }
+                        buf = newbuf;
+                }
 	}
 }
 

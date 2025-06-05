@@ -22,6 +22,9 @@
 
 #include <string>
 #include <fstream>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 // Destructor properly closes any open file and mapping
 class mmapifstream : public std::ifstream {
@@ -29,6 +32,10 @@ public:
         bool live;
         unsigned int filesize;
         char *map;
+#ifdef _WIN32
+        HANDLE hFile;
+        HANDLE hMap;
+#endif
         mmapifstream() { live = false; }
         mmapifstream(std::string filename);
         ~mmapifstream(); // cleans up resources
