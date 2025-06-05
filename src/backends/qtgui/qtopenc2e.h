@@ -19,6 +19,7 @@
 
 #include <QMainWindow>
 #include <QLabel>
+#include <QMenu>
 #include <memory>
 #include "AgentRef.h"
 

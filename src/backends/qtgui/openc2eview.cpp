@@ -20,6 +20,8 @@
 
 #include "openc2eview.h"
 #include <QtGui>
+#include <QApplication>
+#include <QCoreApplication>
 #include <QScrollBar>
 #include "QtBackend.h"
 
@@ -93,7 +95,7 @@ void openc2eView::resizeEvent(QResizeEvent *) {
 }
 
 void openc2eView::paintEvent(QPaintEvent *) {
-	((QApplication *)QApplication::instance())->syncX();
+        QCoreApplication::processEvents();
 
 	if (!firsttime) {
 		// TODO: mad hax
