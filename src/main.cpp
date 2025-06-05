@@ -22,7 +22,9 @@
 #include "version.h"
 #include <iostream>
 #include "Engine.h"
+#ifdef SDL_SUPPORT
 #include "backends/SDLBackend.h"
+#endif
 #ifdef SDLMIXER_SUPPORT
 #include "backends/SDLMixerBackend.h"
 #endif
@@ -51,7 +53,9 @@ extern "C" int main(int argc, char *argv[]) {
 		std::cout << "openc2e (" << version << "), built " __DATE__ " " __TIME__ "\nCopyright (c) 2004-2008 "
 			"Alyssa Milburn and others\n\n";
 
-		engine.addPossibleBackend("sdl", shared_ptr<Backend>(new SDLBackend()));
+#ifdef SDL_SUPPORT
+                engine.addPossibleBackend("sdl", shared_ptr<Backend>(new SDLBackend()));
+#endif
 #ifdef QT_SUPPORT
 		boost::shared_ptr<QtBackend> qtbackend = boost::shared_ptr<QtBackend>(new QtBackend());
 		boost::shared_ptr<Backend> qtbackend_generic = boost::dynamic_pointer_cast<class Backend, class QtBackend>(qtbackend);

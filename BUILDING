@@ -2,6 +2,7 @@
  * 'mkdir build', 'cd build', 'cmake ..' to construct a Makefile
  * then run 'make' in the build directory to compile
  * you can run 'ccmake ..' in the build directory to change compile options
+ * SDL support can be toggled by passing -DOPENC2E_ENABLE_SDL=ON (or OFF) when running cmake
 
 * if you add a CAOS function, you need to:
  * add prototype to caosVM.h
